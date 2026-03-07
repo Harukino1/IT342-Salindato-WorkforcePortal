@@ -1,0 +1,192 @@
+/* Background */
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #1a1a1a, #000);
+  padding: 20px;
+}
+
+/* Card */
+.register-form-wrapper {
+  background: #0f0f0f;
+  border-radius: 18px;
+  padding: 50px 60px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Header */
+.register-header h2 {
+  color: #ffffff;
+  font-size: 34px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.register-header p {
+  color: #9ca3af;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 35px;
+}
+
+/* Inputs */
+.form-group label {
+  color: #e5e7eb;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 15px;
+  border-radius: 12px;
+  border: 2px solid #1f2933;
+  background: #000;
+  color: #fff;
+  font-size: 16px;
+  transition: 0.3s ease;
+}
+
+.form-group input::placeholder {
+  color: #6b7280;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+}
+
+/* First + Last name row */
+.name-row {
+  display: flex;
+  gap: 20px;
+}
+
+/* Password */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 48px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.toggle-password:hover {
+  color: #6366f1;
+}
+
+/* Button */
+.register-button {
+  width: 100%;
+  padding: 16px;
+  margin-top: 30px;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.register-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5);
+}
+
+/* Login link */
+.login-link {
+  margin-top: 30px;
+  text-align: center;
+  color: #9ca3af;
+}
+
+.login-link a {
+  color: #818cf8;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* Alert Messages */
+.alert {
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Loading Spinner */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Disabled state for inputs */
+input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* Disabled button */
+.register-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

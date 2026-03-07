@@ -1,0 +1,15 @@
+# Node dependencies
+node_modules/
+dist/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# Compiled Java files
+target/
+.mvn/wrapper/
+
+# Sensitive data
+.env

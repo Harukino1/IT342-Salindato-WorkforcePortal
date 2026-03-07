@@ -17,10 +17,10 @@ import io.jsonwebtoken.security.Keys;
 
 @Component
 public class TokenProvider {
-    @Value("${jwt.secret-key:defaultSecretKey}")
+    @Value("${jwt.secret}")
     private String SECRET_KEY;
 
-    @Value("${jwt.expiration-time:86400000}")
+    @Value("${jwt.expiration}")
     private long EXPIRATION_TIME;
 
     public String generateToken(User user) {
@@ -61,8 +61,9 @@ public class TokenProvider {
     }
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
-    }
+    byte[] keyBytes = java.util.Base64.getDecoder().decode(SECRET_KEY);
+    return Keys.hmacShaKeyFor(keyBytes);
+}
 
     // Optional: Get user ID from token
     public String getUserIdFromToken(String token) {

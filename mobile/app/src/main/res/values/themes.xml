@@ -1,0 +1,23 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme -->
+    <style name="Base.Theme.Mobileapp"
+        parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- Dark Background -->
+        <item name="android:windowBackground">#0D0D0D</item>
+
+        <!-- Primary Accent (Button Color) -->
+        <item name="colorPrimary">#6C63FF</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+
+        <!-- Status + Navigation Bar -->
+        <item name="android:statusBarColor">#0D0D0D</item>
+        <item name="android:navigationBarColor">#0D0D0D</item>
+
+    </style>
+
+    <style name="Theme.Mobileapp"
+        parent="Base.Theme.Mobileapp" />
+
+</resources>

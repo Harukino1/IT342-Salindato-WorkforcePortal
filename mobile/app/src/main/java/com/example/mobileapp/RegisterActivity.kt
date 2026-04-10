@@ -1,7 +1,9 @@
 package com.example.mobileapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -31,6 +33,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var etConfirmPassword: TextInputEditText
 
     private lateinit var btnRegister: MaterialButton
+    private lateinit var tvSignIn: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +59,7 @@ class RegisterActivity : AppCompatActivity() {
         etConfirmPassword = findViewById(R.id.etConfirmPassword)
 
         btnRegister = findViewById(R.id.btnRegister)
+        tvSignIn = findViewById(R.id.tvSignIn)
     }
 
     private fun setupListeners() {
@@ -63,6 +67,11 @@ class RegisterActivity : AppCompatActivity() {
             if (validateInputs()) {
                 performRegistration()
             }
+        }
+
+        tvSignIn.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
         }
     }
 
@@ -150,7 +159,7 @@ class RegisterActivity : AppCompatActivity() {
                         firstName = firstName,
                         lastName = lastName,
                         password = password,
-                        phoneNumber = phone  // mapping phone → phoneNumber to match backend
+                        phoneNumber = phone
                     )
                 )
 
@@ -161,7 +170,6 @@ class RegisterActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    // Navigate back to login
                     finish()
 
                 } else {

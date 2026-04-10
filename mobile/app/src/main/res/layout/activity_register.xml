@@ -197,6 +197,35 @@
                     android:backgroundTint="#6C63FF"
                     app:cornerRadius="20dp"/>
 
+                <!-- Already Have an Account -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="18dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Already have an account? "
+                        android:textSize="14sp"
+                        android:textColor="#9E9E9E"/>
+
+                    <TextView
+                        android:id="@+id/tvSignIn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sign In"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="#6C63FF"
+                        android:clickable="true"
+                        android:focusable="true"/>
+
+                </LinearLayout>
+
             </LinearLayout>
         </ScrollView>
 

@@ -25,6 +25,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var etPassword: TextInputEditText
     private lateinit var btnLogin: MaterialButton
     private lateinit var tvForgotPassword: TextView
+    private lateinit var tvSignUp: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +42,7 @@ class LoginActivity : AppCompatActivity() {
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
         tvForgotPassword = findViewById(R.id.tvForgotPassword)
+        tvSignUp = findViewById(R.id.tvSignUp)
     }
 
     private fun setupListeners() {
@@ -52,6 +54,10 @@ class LoginActivity : AppCompatActivity() {
 
         tvForgotPassword.setOnClickListener {
             Toast.makeText(this, "Forgot Password Clicked", Toast.LENGTH_SHORT).show()
+        }
+
+        tvSignUp.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
 
@@ -111,7 +117,6 @@ class LoginActivity : AppCompatActivity() {
                     finish()
 
                 } else {
-                    // Parse the error body from the backend {"message": "..."}
                     val errorBody = response.errorBody()?.string()
                     val errorMessage = try {
                         Gson().fromJson(errorBody, ErrorResponse::class.java).message
@@ -122,7 +127,6 @@ class LoginActivity : AppCompatActivity() {
                 }
 
             } catch (e: Exception) {
-                // Network error (no connection, server down, etc.)
                 Toast.makeText(
                     this@LoginActivity,
                     "Connection failed. Check your network.",

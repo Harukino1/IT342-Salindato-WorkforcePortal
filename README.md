@@ -39,7 +39,7 @@ nd
 
 ## 🚶 Steps to run Frontend
 ```bash
-cd web
+cd frontend
 npm run dev
 ```
 

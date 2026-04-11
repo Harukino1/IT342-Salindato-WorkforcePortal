@@ -51,20 +51,19 @@ public class AttendanceService {
         Attendance attendance = getOpenAttendance(user.getId());
 
         if (attendance.getBreakStartedAt() != null) {
-            int extraBreakMinutes = calculateBreakMinutes(attendance.getBreakStartedAt(), LocalDateTime.now());
-            int currentBreakMinutes = attendance.getBreakDuration() == null ? 0 : Math.max(0, attendance.getBreakDuration());
-            attendance.setBreakDuration(Math.max(0, currentBreakMinutes + extraBreakMinutes));
+            int extraBreakSeconds = calculateBreakSeconds(attendance.getBreakStartedAt(), LocalDateTime.now());
+            int currentBreakSeconds = attendance.getBreakDuration() == null ? 0 : Math.max(0, attendance.getBreakDuration());
+            attendance.setBreakDuration(Math.max(0, currentBreakSeconds + extraBreakSeconds));
             attendance.setBreakStartedAt(null);
         }
 
         LocalDateTime now = LocalDateTime.now();
         attendance.setClockOut(now);
 
-        int breakMinutes = attendance.getBreakDuration() == null ? 0 : Math.max(0, attendance.getBreakDuration());
-        long minutesWorked = Duration.between(attendance.getClockIn(), now).toMinutes() - breakMinutes;
-        minutesWorked = Math.max(0, minutesWorked);
-        BigDecimal totalHours = BigDecimal.valueOf(minutesWorked)
-                .divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP);
+        int breakSeconds = attendance.getBreakDuration() == null ? 0 : Math.max(0, attendance.getBreakDuration());
+        long workedSeconds = Math.max(0, Duration.between(attendance.getClockIn(), now).getSeconds() - breakSeconds);
+        BigDecimal totalHours = BigDecimal.valueOf(workedSeconds)
+            .divide(BigDecimal.valueOf(3600), 2, RoundingMode.HALF_UP);
 
         attendance.setTotalHours(totalHours);
         attendance.setStatus("COMPLETED");
@@ -95,10 +94,10 @@ public class AttendanceService {
             throw new RuntimeException("No active break found");
         }
 
-        int extraBreakMinutes = calculateBreakMinutes(attendance.getBreakStartedAt(), LocalDateTime.now());
-        int previousBreakMinutes = attendance.getBreakDuration() == null ? 0 : Math.max(0, attendance.getBreakDuration());
+        int extraBreakSeconds = calculateBreakSeconds(attendance.getBreakStartedAt(), LocalDateTime.now());
+        int previousBreakSeconds = attendance.getBreakDuration() == null ? 0 : Math.max(0, attendance.getBreakDuration());
 
-        attendance.setBreakDuration(Math.max(0, previousBreakMinutes + extraBreakMinutes));
+        attendance.setBreakDuration(Math.max(0, previousBreakSeconds + extraBreakSeconds));
         attendance.setBreakStartedAt(null);
         attendance.setStatus("PRESENT");
         return attendanceRepository.save(attendance);
@@ -120,12 +119,8 @@ public class AttendanceService {
                 .orElseThrow(() -> new RuntimeException("No active clock-in found"));
     }
 
-    private int calculateBreakMinutes(LocalDateTime start, LocalDateTime end) {
+    private int calculateBreakSeconds(LocalDateTime start, LocalDateTime end) {
         long breakSeconds = Math.max(0, Duration.between(start, end).getSeconds());
-        if (breakSeconds == 0) {
-            return 0;
-        }
-
-        return (int) ((breakSeconds + 59) / 60);
+        return (int) breakSeconds;
     }
 }

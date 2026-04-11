@@ -155,7 +155,7 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .page-header {
@@ -235,10 +235,33 @@
   color: #818cf8;
 }
 
+.status-badge--break {
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+}
+
+.status-badge--break .status-badge__dot {
+  background: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+}
+
+.status-badge--break .status-badge__label {
+  color: #34d399;
+}
+
 .status-detail {
   font-size: 14px;
   color: #e5e7eb;
-  line-height: 1.8;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.status-detail__row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .status-detail strong {
@@ -359,9 +382,17 @@
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   flex: 1;
+  min-height: 0;
 }
 
 /* Recent Activity Table */
+.activity-table-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border-radius: 10px;
+}
+
 .activity-table {
   width: 100%;
   border-collapse: collapse;

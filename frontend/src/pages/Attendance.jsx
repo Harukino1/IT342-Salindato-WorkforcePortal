@@ -41,6 +41,29 @@ function formatDateTime(date) {
 
 function parseBackendDate(value) {
   if (!value) return null;
+
+  if (Array.isArray(value)) {
+    const [year, month = 1, day = 1, hour = 0, minute = 0, second = 0, nano = 0] = value;
+    const millis = Math.floor((Number(nano) || 0) / 1_000_000);
+    const parsed = new Date(year, (month - 1), day, hour, minute, second, millis);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  if (typeof value === "object") {
+    const year = Number(value.year);
+    const month = Number(value.monthValue ?? value.month ?? 1);
+    const day = Number(value.dayOfMonth ?? value.day ?? 1);
+    const hour = Number(value.hour ?? 0);
+    const minute = Number(value.minute ?? 0);
+    const second = Number(value.second ?? 0);
+    const nano = Number(value.nano ?? 0);
+    if (Number.isFinite(year) && Number.isFinite(month) && Number.isFinite(day)) {
+      const millis = Math.floor(Math.max(0, nano) / 1_000_000);
+      const parsed = new Date(year, month - 1, day, hour, minute, second, millis);
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+  }
+
   const dateValue = typeof value === "string" && !value.includes("T")
     ? `${value}T00:00:00`
     : value;
@@ -67,11 +90,20 @@ function formatShortDate(value) {
 }
 
 function formatDurationHM(totalMinutes) {
-  if (!Number.isFinite(totalMinutes) || totalMinutes <= 0) return "-";
+  if (!Number.isFinite(totalMinutes) || totalMinutes < 0) return "0h0m";
   const safeMinutes = Math.max(0, Math.floor(totalMinutes));
   const hours = Math.floor(safeMinutes / 60);
   const mins = safeMinutes % 60;
-  return `${hours}h${String(mins).padStart(2, "0")}m`;
+  return `${hours}h${mins}m`;
+}
+
+function formatDurationHMS(totalSeconds) {
+  if (!Number.isFinite(totalSeconds) || totalSeconds < 0) return "00h00m00s";
+  const safeSeconds = Math.max(0, Math.floor(totalSeconds));
+  const hours = Math.floor(safeSeconds / 3600);
+  const minutes = Math.floor((safeSeconds % 3600) / 60);
+  const seconds = safeSeconds % 60;
+  return `${String(hours).padStart(2, "0")}h${String(minutes).padStart(2, "0")}m${String(seconds).padStart(2, "0")}s`;
 }
 
 function decimalHoursToMinutes(totalHours) {
@@ -86,6 +118,54 @@ function sameLocalDay(dateA, dateB) {
     dateA.getMonth() === dateB.getMonth() &&
     dateA.getDate() === dateB.getDate()
   );
+}
+
+function calculateAttendanceDurations(record, nowDate) {
+  const clockInDate = parseBackendDate(record?.clockIn);
+  const clockOutDate = parseBackendDate(record?.clockOut);
+  const breakStartDate = parseBackendDate(record?.breakStartedAt);
+
+  if (!clockInDate) {
+    return { workedSeconds: 0, totalBreakSeconds: 0 };
+  }
+
+  const persistedBreakSeconds = Number(record?.breakDuration) || 0;
+  const liveBreakSeconds = breakStartDate && !clockOutDate
+    ? Math.max(0, Math.floor((nowDate.getTime() - breakStartDate.getTime()) / 1000))
+    : 0;
+  const totalBreakSeconds = Math.max(0, persistedBreakSeconds + liveBreakSeconds);
+
+  const elapsedSeconds = Math.max(
+    0,
+    Math.floor(((clockOutDate || nowDate).getTime() - clockInDate.getTime()) / 1000)
+  );
+
+  const computedWorkedSeconds = Math.max(0, elapsedSeconds - totalBreakSeconds);
+  const persistedWorkedSeconds = Math.max(0, Math.round((Number(record?.totalHours) || 0) * 3600));
+
+  return {
+    workedSeconds: clockOutDate ? Math.max(computedWorkedSeconds, persistedWorkedSeconds) : computedWorkedSeconds,
+    totalBreakSeconds,
+  };
+}
+
+function getRecentActivityDurations(record, nowDate) {
+  const clockOutDate = parseBackendDate(record?.clockOut);
+  if (!clockOutDate) {
+    return {
+      workingHours: "-",
+      breakDuration: "-",
+    };
+  }
+
+  const computed = calculateAttendanceDurations(record, nowDate);
+  const persistedWorkedSeconds = Math.max(0, Math.round((Number(record?.totalHours) || 0) * 3600));
+  const workedSeconds = Math.max(computed.workedSeconds, persistedWorkedSeconds);
+
+  return {
+    workingHours: formatDurationHM(Math.floor(workedSeconds / 60)),
+    breakDuration: formatDurationHM(Math.floor(computed.totalBreakSeconds / 60)),
+  };
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
@@ -119,37 +199,13 @@ export default function Attendance() {
 
       const records = Array.isArray(response.data?.records) ? response.data.records : [];
       const now = new Date();
-      const mappedRecords = records.map((record, index) => {
-        const clockInDate = parseBackendDate(record.clockIn);
-        const clockOutDate = parseBackendDate(record.clockOut);
-        const minutesFromTimeRange =
-          clockInDate && clockOutDate
-            ? Math.max(0, Math.floor((clockOutDate.getTime() - clockInDate.getTime()) / 60000))
-            : 0;
-        const breakDurationMinutes = Number(record.breakDuration) || 0;
-        const hasActiveBreak = Boolean(record.breakStartedAt && !record.clockOut);
-        const liveBreakSeconds = hasActiveBreak
-          ? Math.max(0, Math.floor((Date.now() - parseBackendDate(record.breakStartedAt).getTime()) / 1000))
-          : 0;
-        const totalBreakSeconds = (breakDurationMinutes * 60) + liveBreakSeconds;
-
-        const workedSeconds = clockInDate
-          ? Math.max(
-              0,
-              Math.floor(((clockOutDate || now).getTime() - clockInDate.getTime()) / 1000) - totalBreakSeconds
-            )
-          : 0;
-
-        return {
-          id: record.id || index + 1,
-          date: formatShortDate(record.date || record.clockIn),
-          clockIn: formatTime(record.clockIn),
-          clockOut: formatTime(record.clockOut),
-          workingHours: formatDurationHM(Math.floor(workedSeconds / 60)),
-          breakDuration: formatDurationHM(Math.floor(totalBreakSeconds / 60)),
-          raw: record,
-        };
-      });
+      const mappedRecords = records.map((record, index) => ({
+        id: record.id || index + 1,
+        date: formatShortDate(record.date || record.clockIn),
+        clockIn: formatTime(record.clockIn),
+        clockOut: formatTime(record.clockOut),
+        raw: record,
+      }));
 
       const today = records.find((record) => {
         if (record.date === todayKey) return true;
@@ -302,23 +358,9 @@ export default function Attendance() {
 
   const todayClockInDate = parseBackendDate(todayRecord?.clockIn);
   const todayClockOutDate = parseBackendDate(todayRecord?.clockOut);
-  const todayBreakStartDate = parseBackendDate(todayRecord?.breakStartedAt);
-
-  const persistedBreakMinutes = Number(todayRecord?.breakDuration) || 0;
-  const liveBreakSeconds = isOnBreak && todayBreakStartDate
-    ? Math.max(0, Math.floor((currentTime.getTime() - todayBreakStartDate.getTime()) / 1000))
-    : 0;
-  const totalBreakSeconds = (persistedBreakMinutes * 60) + liveBreakSeconds;
-  const todayBreakMinutes = Math.floor(totalBreakSeconds / 60);
-
-  const workedSeconds = todayClockInDate
-    ? Math.max(
-        0,
-        Math.floor(((todayClockOutDate || currentTime).getTime() - todayClockInDate.getTime()) / 1000) - totalBreakSeconds
-      )
-    : 0;
-
-  const displayedWorkingHours = formatDurationHM(Math.floor(workedSeconds / 60));
+  const todayDurations = calculateAttendanceDurations(todayRecord, currentTime);
+  const displayedWorkingHours = formatDurationHMS(todayDurations.workedSeconds);
+  const displayedBreakDuration = formatDurationHMS(todayDurations.totalBreakSeconds);
   const currentStatusLabel = !isClockedIn ? 'Clocked Out' : isOnBreak ? 'On Break' : 'Clocked In';
 
   return (
@@ -399,14 +441,24 @@ export default function Attendance() {
             <div className="card">
               <p className="card__title">Current Status</p>
 
-              <div className="status-badge">
+              <div className={`status-badge ${isOnBreak ? "status-badge--break" : ""}`}>
                 <span className="status-badge__dot" />
                 <span className="status-badge__label">{currentStatusLabel}</span>
               </div>
 
               <p className="status-detail">
-                <strong>Clocked in:</strong> <span className="status-time-chip">{formatTime(todayClockInDate)}</span><br />
-                <strong>Working Hours:</strong> {displayedWorkingHours}
+                <span className="status-detail__row">
+                  <strong>Clocked in:</strong>
+                  <span className="status-time-chip">{formatTime(todayClockInDate)}</span>
+                </span>
+                <span className="status-detail__row">
+                  <strong>Working Hours:</strong>
+                  <span className="status-time-chip">{displayedWorkingHours}</span>
+                </span>
+                <span className="status-detail__row">
+                  <strong>Break Duration:</strong>
+                  <span className="status-time-chip">{displayedBreakDuration}</span>
+                </span>
               </p>
             </div>
 
@@ -426,7 +478,7 @@ export default function Attendance() {
                 </div>
                 <div className="summary-row">
                   <span className="summary-row__label">Break</span>
-                  <span className="summary-row__value">{formatDurationHM(todayBreakMinutes)}</span>
+                  <span className="summary-row__value">{formatDurationHM(Math.floor(todayDurations.totalBreakSeconds / 60))}</span>
                 </div>
               </div>
             </div>
@@ -468,37 +520,43 @@ export default function Attendance() {
             {/* Recent Activity */}
             <div className="card">
               <p className="card__title">Recent Activity</p>
-              <table className="activity-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Clock In</th>
-                    <th>Clock Out</th>
-                    <th>Working Hours</th>
-                    <th>Break Duration</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentActivity.length === 0 && (
+              <div className="activity-table-wrap">
+                <table className="activity-table">
+                  <thead>
                     <tr>
-                      <td colSpan="5">No attendance records yet.</td>
+                      <th>Date</th>
+                      <th>Clock In</th>
+                      <th>Clock Out</th>
+                      <th>Working Hours</th>
+                      <th>Break Duration</th>
                     </tr>
-                  )}
-                  {recentActivity.map(({ id, date, clockIn, clockOut, workingHours, breakDuration }) => (
-                    <tr key={id}>
-                      <td>{date}</td>
-                      <td>{clockIn}</td>
-                      <td>{clockOut}</td>
-                      <td>
-                        <span className="hours-badge">{workingHours}</span>
-                      </td>
-                      <td>
-                        <span className="hours-badge">{breakDuration}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {recentActivity.length === 0 && (
+                      <tr>
+                        <td colSpan="5">No attendance records yet.</td>
+                      </tr>
+                    )}
+                    {recentActivity.map(({ id, date, clockIn, clockOut, raw }) => {
+                      const rowDurations = getRecentActivityDurations(raw, currentTime);
+
+                      return (
+                        <tr key={id}>
+                          <td>{date}</td>
+                          <td>{clockIn}</td>
+                          <td>{clockOut}</td>
+                          <td>
+                            <span className="hours-badge">{rowDurations.workingHours}</span>
+                          </td>
+                          <td>
+                            <span className="hours-badge">{rowDurations.breakDuration}</span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {/* Monthly Overview */}

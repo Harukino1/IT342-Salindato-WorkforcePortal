@@ -1,4 +1,4 @@
-import React, { use, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -79,15 +79,15 @@ const Login = () => {
       console.error('Login error:', err);
       console.log('Backend error message:', err.response?.data);
 
-      if(error.response){
-        if(error.response.status === 401){
+      if(err.response){
+        if(err.response.status === 401){
           setError('Invalid email or password');
-        }else if(error.response.status === 400){
+        }else if(err.response.status === 400){
           setError('Invalid, please check your login details');
         }else{
-          setError(error.response.data?.message || 'Login failed. Please try again.');
+          setError(err.response.data?.message || 'Login failed. Please try again.');
         }
-      }else if(error.request){
+      }else if(err.request){
         setError('Backend no response.');
       }else{
         setError('An error occurred. Please try again.');

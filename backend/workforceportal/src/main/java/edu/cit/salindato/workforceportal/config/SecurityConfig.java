@@ -15,6 +15,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()  // Allow auth endpoints
+                    .requestMatchers("/api/attendance/**").permitAll()  // Attendance validates Bearer token manually
                         .anyRequest().authenticated()  // Protect everything else
                 );
 

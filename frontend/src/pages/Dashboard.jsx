@@ -8,6 +8,8 @@ const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isClockedIn, setIsClockedIn] = useState(false);
+  const [isClockingIn, setIsClockingIn] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -26,6 +28,13 @@ const Dashboard = () => {
         });
 
         setUser(response.data);
+
+        const attendanceResponse = await axios.get('http://localhost:8080/api/attendance/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setIsClockedIn(Boolean(attendanceResponse.data?.isClockedIn));
       } catch (error) {
         console.error('Error fetching user data:', error);
         localStorage.removeItem('token');
@@ -62,6 +71,33 @@ const Dashboard = () => {
     setShowLogoutConfirm(false);
   };
 
+  const handleDashboardClockIn = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/');
+      return;
+    }
+
+    try {
+      setIsClockingIn(true);
+      await axios.post('http://localhost:8080/api/attendance/clock-in', {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      setIsClockedIn(true);
+      navigate('/attendance');
+    } catch (error) {
+      console.error('Error clocking in from dashboard:', error);
+      if (error.response?.status === 400) {
+        setIsClockedIn(true);
+        navigate('/attendance');
+      }
+    } finally {
+      setIsClockingIn(false);
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -88,7 +124,7 @@ const Dashboard = () => {
 
         <nav className="nav">
           <button className="nav-item active">Dashboard</button>
-          <button className="nav-item">Attendance</button>
+          <button className="nav-item" onClick={() => navigate('/attendance')}>Attendance</button>
           <button className="nav-item">Schedule</button>
           <button className="nav-item">Leave</button>
           <button className="nav-item">Settings</button>
@@ -102,10 +138,19 @@ const Dashboard = () => {
         {/* Welcome Header Container */}
         <section className="welcome-container">
           <div className="avatar">👤</div>
-          <h1>
-            Welcome,<br />
-            <span>{user?.lastName}, {user?.firstName}</span>
-          </h1>
+          <div className="welcome-content">
+            <h1>
+              Welcome,<br />
+              <span>{user?.lastName}, {user?.firstName}</span>
+            </h1>
+            <button
+              className="dashboard-clock-in"
+              onClick={handleDashboardClockIn}
+              disabled={isClockedIn || isClockingIn}
+            >
+              {isClockedIn ? 'Already Clocked In' : isClockingIn ? 'Clocking In...' : 'Clock In'}
+            </button>
+          </div>
         </section>
 
         {/* Content */}

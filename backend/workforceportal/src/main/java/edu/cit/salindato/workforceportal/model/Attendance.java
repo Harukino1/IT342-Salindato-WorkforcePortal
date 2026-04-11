@@ -1,17 +1,18 @@
 package edu.cit.salindato.workforceportal.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -32,6 +33,9 @@ public class Attendance {
 
 	@Field("break_duration")
 	private Integer breakDuration;
+
+	@Field("break_started_at")
+	private LocalDateTime breakStartedAt;
 
 	@Field("total_hours")
 	private BigDecimal totalHours;

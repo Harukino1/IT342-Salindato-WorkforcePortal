@@ -125,8 +125,8 @@ const Dashboard = () => {
         <nav className="nav">
           <button className="nav-item active">Dashboard</button>
           <button className="nav-item" onClick={() => navigate('/attendance')}>Attendance</button>
-          <button className="nav-item">Schedule</button>
           <button className="nav-item">Leave</button>
+          <button className="nav-item">Profile</button>
           <button className="nav-item">Settings</button>
         </nav>
 
@@ -154,26 +154,30 @@ const Dashboard = () => {
         </section>
 
         {/* Content */}
-        <section className="content">
-          {/* Announcement Board */}
-          <div className="card announcement">
-            <h3>Announcement Board</h3>
-            <div className="card-box">
-              <p>No announcements yet.</p>
-              <p>Solomon 4:7</p>
-              <p>"You are altogether beautiful, my love; there is no flaw in you</p>
+        <section className="content-stack">
+          <div className="content-row announcement-row">
+            {/* Announcement Board */}
+            <div className="card announcement">
+              <h3>Announcement Board</h3>
+              <div className="card-box">
+                <p>No announcements yet.</p>
+                <p>Solomon 4:7</p>
+                <p>"You are altogether beautiful, my love; there is no flaw in you</p>
+              </div>
             </div>
           </div>
 
-          {/* Activity Log */}
-          <div className="card activity">
-            <h3>Activity Log</h3>
-            <div className="card-box">
-              <ul>
-                <li>Wakey Wakey</li>
-                <li>It's time for school</li>
-                <li>C'mon wake up!</li>
-              </ul>
+          <div className="content-row activity-row">
+            {/* Activity Log */}
+            <div className="card activity">
+              <h3>Activity Log</h3>
+              <div className="card-box">
+                <ul>
+                  <li>Wakey Wakey</li>
+                  <li>It's time for school</li>
+                  <li>C'mon wake up!</li>
+                </ul>
+              </div>
             </div>
           </div>
         </section>

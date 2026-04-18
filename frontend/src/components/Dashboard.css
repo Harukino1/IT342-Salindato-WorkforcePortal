@@ -176,9 +176,28 @@
 }
 
 /* --- Cards --- */
-.content {
+.content-stack {
   display: flex;
-  gap: 30px;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 22px;
+  flex: 1;
+  min-height: 0;
+}
+
+.content-row {
+  display: flex;
+  min-height: 0;
+  height: 100%;
+}
+
+.announcement-row {
+  width: auto;
+  flex: 1.8;
+}
+
+.activity-row {
+  width: auto;
   flex: 1;
 }
 
@@ -186,12 +205,22 @@
   background: #0f0f0f; /* login card background */
   border-radius: 18px;
   padding: 25px;
-  flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   border: 1px solid #1f2933;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  min-width: 0; /* Prevents flex children from blowing out container */
+  height: 100%;
+  width: 100%;
+}
+
+.card.announcement {
+  flex: unset;
+}
+
+.card.activity {
+  flex: unset;
 }
 
 .card h3 {
@@ -229,7 +258,7 @@
 }
 
 /* --- Responsive --- */
-@media (max-width: 1600px) {
+@media (max-width: 768px) {
   .dashboard {
     flex-direction: column;
     height: 100%;
@@ -262,9 +291,16 @@
     padding: 20px;
   }
 
-  .content {
+  .content-stack {
     flex-direction: column;
     gap: 20px;
+  }
+
+  .content-row,
+  .announcement-row,
+  .activity-row {
+    width: 100%;
+    flex: 1;
   }
 
   .welcome-container {

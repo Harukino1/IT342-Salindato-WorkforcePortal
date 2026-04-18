@@ -22,101 +22,105 @@ const LeaveRequest = () => {
   };
 
   return (
-    <div className="leave-container">
-      {/* Sidebar - This might be a separate component in your actual app */}
+    <div className="leave-page shell">
       <aside className="sidebar">
-        <h2>Workforce<br/>Portal</h2>
-        <nav>
-          <button className="nav-link" onClick={() => navigate('/dashboard')}>Dashboard</button>
-          <button className="nav-link" onClick={() => navigate('/attendance')}>Attendance</button>
-          <button className="nav-link active">Leave</button>
-          <button className="nav-link" onClick={() => navigate('/profile')}>Profile</button>
-          <button className="nav-link" onClick={() => navigate('/settings')}>Settings</button>
-        </nav>
-        <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        <div className="sidebar__brand">
+          <span className="logo">WorkForce<br />Portal</span>
+        </div>
+
+        <div className="nav">
+          <div className="nav-item" onClick={() => navigate('/dashboard')} role="button">Dashboard</div>
+          <div className="nav-item" onClick={() => navigate('/attendance')} role="button">Attendance</div>
+          <div className="nav-item nav-item--active" role="button" aria-current="page">Leave</div>
+          <div className="nav-item" onClick={() => navigate('/profile')} role="button">Profile</div>
+          <div className="nav-item" onClick={() => navigate('/settings')} role="button">Settings</div>
+        </div>
+
+        <div className="sidebar__spacer" />
+
+        <button className="sidebar__logout" onClick={handleLogout}>Logout</button>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="main-content">
-        {/* Header */}
-        <header className="page-header">
-          <h1>Leaves</h1>
-          <span className="date-time">{currentDate}</span>
-        </header>
+      <main className="main">
+        <div className="content">
+          <div className="page-header">
+            <h1 className="page-title">Leave Request</h1>
+            <span className="page-datetime">{currentDate}</span>
+          </div>
 
-        {/* Leave Balance Section */}
-        <section className="section-container">
-          <div className="balance-header">
-            <h3>Leave Balance</h3>
-            <button className="submit-leave-btn">Submit a Leave</button>
+          <div className="top-row">
+            <section className="card">
+              <div className="balance-header">
+                <h3 className="card__title">Leave Balance</h3>
+                <button className="submit-leave-btn">Submit a Leave</button>
+              </div>
+              <div className="balance-cards">
+                <div className="balance-card">
+                  <h4>Vacation</h4>
+                  <p>5 days</p>
+                </div>
+                <div className="balance-card">
+                  <h4>Sick</h4>
+                  <p>5 days</p>
+                </div>
+                <div className="balance-card">
+                  <h4>Other</h4>
+                  <p>5 days</p>
+                </div>
+              </div>
+            </section>
           </div>
-          <div className="balance-cards">
-            <div className="balance-card">
-              <h4>Vacation</h4>
-              <p>5 days</p>
-            </div>
-            <div className="balance-card">
-              <h4>Sick</h4>
-              <p>5 days</p>
-            </div>
-            <div className="balance-card">
-              <h4>Other</h4>
-              <p>5 days</p>
-            </div>
-          </div>
-        </section>
 
-        {/* Pending Request Section */}
-        <section className="section-container">
-          <div className="table-header">
-            <h3>Pending Request</h3>
-          </div>
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Dates</th>
-                <th>Days</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Placeholder row matching the mockup */}
-              <tr className="table-row">
-                <td><div className="placeholder-pill"></div></td>
-                <td><div className="placeholder-pill"></div></td>
-                <td><div className="placeholder-pill"></div></td>
-                <td><div className="placeholder-pill"></div></td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+          <div className="bottom-row">
+            <section className="card">
+              <div className="table-header">
+                <h3 className="card__title">Pending Request</h3>
+              </div>
+              <table className="custom-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Dates</th>
+                    <th>Days</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="table-row">
+                    <td><div className="placeholder-pill"></div></td>
+                    <td><div className="placeholder-pill"></div></td>
+                    <td><div className="placeholder-pill"></div></td>
+                    <td><div className="placeholder-pill"></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
 
-        {/* Recent Leaves Section */}
-        <section className="section-container">
-          <div className="table-header">
-            <h3>Recent Leaves</h3>
+            <section className="card">
+              <div className="table-header">
+                <h3 className="card__title">Recent Leaves</h3>
+              </div>
+              <table className="custom-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Dates</th>
+                    <th>Days</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="table-row">
+                    <td><div className="placeholder-pill"></div></td>
+                    <td><div className="placeholder-pill"></div></td>
+                    <td><div className="placeholder-pill"></div></td>
+                    <td><div className="placeholder-pill"></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
           </div>
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Dates</th>
-                <th>Days</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Placeholder row matching the mockup */}
-              <tr className="table-row">
-                <td><div className="placeholder-pill"></div></td>
-                <td><div className="placeholder-pill"></div></td>
-                <td><div className="placeholder-pill"></div></td>
-                <td><div className="placeholder-pill"></div></td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+        </div>
       </main>
     </div>
   );

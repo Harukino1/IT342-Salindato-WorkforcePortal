@@ -1,0 +1,192 @@
+.leave-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f7f5f0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Sidebar Styling (Assuming it might be shared, but styling here for completeness) */
+.sidebar {
+  width: 250px;
+  background-color: #e8e6e1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #333;
+  font-weight: 300;
+}
+
+.nav-link {
+  display: block;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  background-color: #9baabf;
+  color: #333;
+  text-decoration: none;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.nav-link.active {
+  background-color: #7a93b5;
+  color: #fff;
+}
+
+.logout-btn {
+  margin-top: auto;
+  background-color: #f26d6d;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Main Content Styling */
+.main-content {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e8e6e1;
+  padding: 15px 30px;
+  border-radius: 10px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 400;
+  color: #444;
+}
+
+.date-time {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Base Section Styling */
+.section-container {
+  background-color: #e8e6e1;
+  border-radius: 10px;
+  padding: 20px 30px;
+}
+
+/* Leave Balance Section */
+.balance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
+.balance-header h3 {
+  margin: 0;
+  font-weight: 400;
+  color: #555;
+}
+
+.submit-leave-btn {
+  background-color: #9baabf;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: #333;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.balance-cards {
+  display: flex;
+  gap: 30px;
+}
+
+.balance-card {
+  background-color: #9baabf;
+  flex: 1;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  color: #333;
+}
+
+.balance-card h4 {
+  margin: 0 0 10px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding-bottom: 10px;
+  font-weight: 400;
+}
+
+.balance-card p {
+  margin: 0;
+  font-size: 24px;
+}
+
+/* Table Sections */
+.table-header {
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
+.table-header h3 {
+  margin: 0;
+  font-weight: 400;
+  color: #555;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+
+.custom-table th {
+  background-color: #9baabf;
+  padding: 12px;
+  font-weight: 400;
+  text-align: center;
+  color: #333;
+}
+
+.custom-table th:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+.custom-table th:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+
+.table-row {
+  background-color: #9baabf;
+  border-radius: 8px;
+}
+
+.table-row td {
+  padding: 15px;
+  text-align: center;
+}
+
+.table-row td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+.table-row td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+
+.placeholder-pill {
+  background-color: #718096;
+  height: 20px;
+  border-radius: 10px;
+  margin: 0 auto;
+  width: 80%;
+}

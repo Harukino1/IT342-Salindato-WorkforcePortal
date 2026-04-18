@@ -1,7 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../components/LeaveRequest.css';
 
 const LeaveRequest = () => {
+  const navigate = useNavigate();
+
   // Format current date similar to the mockup
   const currentDate = new Date().toLocaleString('en-US', {
     weekday: 'long',
@@ -13,19 +16,24 @@ const LeaveRequest = () => {
     hour12: true
   });
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
   return (
     <div className="leave-container">
       {/* Sidebar - This might be a separate component in your actual app */}
       <aside className="sidebar">
         <h2>Workforce<br/>Portal</h2>
         <nav>
-          <a href="/dashboard" className="nav-link">Dashboard</a>
-          <a href="/attendance" className="nav-link">Attendance</a>
-          <a href="/leave" className="nav-link active">Leave</a>
-          <a href="/profile" className="nav-link">Profile</a>
-          <a href="/settings" className="nav-link">Settings</a>
+          <button className="nav-link" onClick={() => navigate('/dashboard')}>Dashboard</button>
+          <button className="nav-link" onClick={() => navigate('/attendance')}>Attendance</button>
+          <button className="nav-link active">Leave</button>
+          <button className="nav-link" onClick={() => navigate('/profile')}>Profile</button>
+          <button className="nav-link" onClick={() => navigate('/settings')}>Settings</button>
         </nav>
-        <button className="logout-btn">Logout</button>
+        <button className="logout-btn" onClick={handleLogout}>Logout</button>
       </aside>
 
       {/* Main Content Area */}

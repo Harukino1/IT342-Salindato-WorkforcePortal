@@ -241,6 +241,8 @@ export default function Attendance() {
     } else if (id === 'attendance') {
       // Stay on the same page, do nothing
       return;
+    } else if (id === 'leave') {
+      navigate('/leave', { replace: true });
     } else {
       // For other nav items, you can add navigation here
       // navigate(`/${id}`);

@@ -1,4 +1,4 @@
-package edu.cit.salindato.workforceportal.service;
+package edu.cit.salindato.workforceportal.features.attendance.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -11,9 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.cit.salindato.workforceportal.model.Attendance;
-import edu.cit.salindato.workforceportal.model.User;
-import edu.cit.salindato.workforceportal.repository.AttendanceRepository;
+import edu.cit.salindato.workforceportal.features.attendance.model.Attendance;
+import edu.cit.salindato.workforceportal.features.auth.model.User;
+import edu.cit.salindato.workforceportal.features.attendance.repository.AttendanceRepository;
+import edu.cit.salindato.workforceportal.features.auth.service.AuthService;
 
 @Service
 public class AttendanceService {

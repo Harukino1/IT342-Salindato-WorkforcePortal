@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import edu.cit.salindato.workforceportal.features.auth.model.User;
+import edu.cit.salindato.workforceportal.features.auth.service.AuthService;
 import edu.cit.salindato.workforceportal.features.leave.dto.LeaveRequestPayload;
 import edu.cit.salindato.workforceportal.features.leave.model.LeaveRequest;
-import edu.cit.salindato.workforceportal.features.auth.model.User;
 import edu.cit.salindato.workforceportal.features.leave.repository.LeaveRequestRepository;
-import edu.cit.salindato.workforceportal.features.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 
 @Service

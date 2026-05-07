@@ -1,16 +1,17 @@
 package edu.cit.salindato.workforceportal.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -20,6 +21,8 @@ import java.time.LocalDateTime;
 public class LeaveRequest {
 	@Id
 	private String id;
+
+	private String subject;
 
 	@Field("leave_type")
 	private String leaveType;
@@ -33,7 +36,7 @@ public class LeaveRequest {
 	@Field("total_days")
 	private Integer totalDays;
 
-	private String reason;
+	private String body; // Maps to what the user inputted
 
 	private String status;
 

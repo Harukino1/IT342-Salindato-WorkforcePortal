@@ -1,8 +1,8 @@
-package edu.cit.salindato.workforceportal.repository;
+package edu.cit.salindato.workforceportal.features.announcement.repository;
 
+import edu.cit.salindato.workforceportal.features.announcement.model.Announcement;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import edu.cit.salindato.workforceportal.model.Announcement;
-
 public interface AnnouncementRepository extends MongoRepository<Announcement, String> {
+
 }

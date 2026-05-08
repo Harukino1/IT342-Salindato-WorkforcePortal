@@ -1,4 +1,4 @@
-package edu.cit.salindato.workforceportal.model;
+package edu.cit.salindato.workforceportal.features.notification.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,17 +15,24 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "announcements")
-public class Announcement {
+@Document(collection = "notifications")
+public class Notification {
 	@Id
 	private String id;
 
-	// One user (admin) can create many announcements.
+	// One user can have many notifications.
 	@Indexed
-	@Field("admin_id")
-	private String adminId;
+	@Field("user_id")
+	private String userId;
 
-	private String content;
+	private String title;
+
+	private String message;
+
+	private String type;
+
+	@Field("is_read")
+	private Boolean isRead;
 
 	@Field("created_at")
 	private LocalDateTime createdAt;

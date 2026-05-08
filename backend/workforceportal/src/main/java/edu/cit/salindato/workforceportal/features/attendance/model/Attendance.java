@@ -1,4 +1,4 @@
-package edu.cit.salindato.workforceportal.model;
+package edu.cit.salindato.workforceportal.features.attendance.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,30 +20,29 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Document(collection = "attendance")
 public class Attendance {
-	@Id
-	private String id;
+    @Id
+    private String id;
 
-	private LocalDate date;
+    private LocalDate date;
 
-	@Field("clock_in")
-	private LocalDateTime clockIn;
+    @Field("clock_in")
+    private LocalDateTime clockIn;
 
-	@Field("clock_out")
-	private LocalDateTime clockOut;
+    @Field("clock_out")
+    private LocalDateTime clockOut;
 
-	@Field("break_duration")
-	private Integer breakDuration;
+    @Field("break_duration")
+    private Integer breakDuration;
 
-	@Field("break_started_at")
-	private LocalDateTime breakStartedAt;
+    @Field("break_started_at")
+    private LocalDateTime breakStartedAt;
 
-	@Field("total_hours")
-	private BigDecimal totalHours;
+    @Field("total_hours")
+    private BigDecimal totalHours;
 
-	private String status;
+    private String status;
 
-	// One user can have many attendance records.
-	@Indexed
-	@Field("user_id")
-	private String userId;
+    @Indexed
+    @Field("user_id")
+    private String userId;
 }

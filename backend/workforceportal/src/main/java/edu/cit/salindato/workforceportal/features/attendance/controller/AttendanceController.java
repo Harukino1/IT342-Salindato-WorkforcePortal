@@ -1,4 +1,4 @@
-package edu.cit.salindato.workforceportal.controller;
+package edu.cit.salindato.workforceportal.features.attendance.controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import edu.cit.salindato.workforceportal.model.Attendance;
-import edu.cit.salindato.workforceportal.service.AttendanceService;
+import edu.cit.salindato.workforceportal.features.attendance.model.Attendance;
+import edu.cit.salindato.workforceportal.features.attendance.service.AttendanceService;
 
 @RestController
 @RequestMapping("/api/attendance")

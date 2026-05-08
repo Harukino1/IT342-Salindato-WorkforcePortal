@@ -1,4 +1,4 @@
-package edu.cit.salindato.workforceportal.controller;
+package edu.cit.salindato.workforceportal.features.auth.controller;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import edu.cit.salindato.workforceportal.dto.AuthRequestDTO;
-import edu.cit.salindato.workforceportal.dto.AuthResponseDTO;
-import edu.cit.salindato.workforceportal.dto.UserRegistrationDTO;
-import edu.cit.salindato.workforceportal.model.User;
-import edu.cit.salindato.workforceportal.service.AuthService;
+import edu.cit.salindato.workforceportal.features.auth.dto.AuthRequestDTO;
+import edu.cit.salindato.workforceportal.features.auth.dto.AuthResponseDTO;
+import edu.cit.salindato.workforceportal.features.auth.dto.UserRegistrationDTO;
+import edu.cit.salindato.workforceportal.features.auth.model.User;
+import edu.cit.salindato.workforceportal.features.auth.service.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,7 +25,6 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    // Authenticates a user using email and password and returns an auth token on success.
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequestDTO authRequest) {
         try {
@@ -41,11 +40,9 @@ public class AuthController {
         }
     }
 
-    // Logs out the user by invalidating/removing the provided authentication token.
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
         try {
-            // Extract token from "Bearer {token}" format
             if (token != null && token.startsWith("Bearer ")) {
                 token = token.substring(7);
             }
@@ -62,7 +59,6 @@ public class AuthController {
         }
     }
 
-    // Registers a new user account and returns basic user details after successful creation.
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserRegistrationDTO registrationDTO) {
         try {
@@ -83,11 +79,9 @@ public class AuthController {
         }
     }
 
-    // Retrieves the currently authenticated user's details based on the provided token.
     @GetMapping("/user/me")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
         try {
-            // Extract token from "Bearer {token}" format
             if (token != null && token.startsWith("Bearer ")) {
                 token = token.substring(7);
             }

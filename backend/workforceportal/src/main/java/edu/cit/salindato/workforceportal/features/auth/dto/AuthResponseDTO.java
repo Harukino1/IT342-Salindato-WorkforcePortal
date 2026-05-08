@@ -1,17 +1,13 @@
-package edu.cit.salindato.workforceportal.dto;
+package edu.cit.salindato.workforceportal.features.auth.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class AuthResponseDTO {
     private String token;
-    private String userId;
+    private String id;
     private String email;
     private String firstName;
     private String lastName;

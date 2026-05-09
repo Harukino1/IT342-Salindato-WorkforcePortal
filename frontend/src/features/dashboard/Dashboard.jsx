@@ -102,6 +102,22 @@ const Dashboard = () => {
         return <div>Loading...</div>;
     }
 
+const NAV_ITEMS = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'attendance', label: 'Attendance' },
+    { id: 'leave', label: 'Leave' },
+    { id: 'profile', label: 'Profile' },
+    { id: 'settings', label: 'Settings' },
+];
+
+    const handleNavClick = (id) => {
+        if (id === 'dashboard') navigate('/dashboard', { replace: true });
+        else if (id === 'attendance') navigate('/attendance', { replace: true });
+        else if (id === 'leave') navigate('/leave', { replace: true });
+        else if (id === 'profile') navigate('/profile', { replace: true });
+        else if (id === 'settings') navigate('/settings', { replace: true });
+    };
+
     return (
         <div className="dashboard">
             {/* Logout Confirmation Modal */}
@@ -123,11 +139,15 @@ const Dashboard = () => {
                 <h2 className="logo">WorkForce Portal</h2>
 
                 <nav className="nav">
-                    <button className="nav-item active">Dashboard</button>
-                    <button className="nav-item" onClick={() => navigate('/attendance')}>Attendance</button>
-                    <button className="nav-item">Leave</button>
-                    <button className="nav-item">Profile</button>
-                    <button className="nav-item">Settings</button>
+                    {NAV_ITEMS.map(({ id, label }) => (
+                        <button
+                            key={id}
+                            className={`nav-item ${id === 'dashboard' ? 'active' : ''}`}
+                            onClick={() => handleNavClick(id)}
+                        >
+                            {label}
+                        </button>
+                    ))}
                 </nav>
 
                 <button className="logout" onClick={handleLogoutClick}>Logout</button>

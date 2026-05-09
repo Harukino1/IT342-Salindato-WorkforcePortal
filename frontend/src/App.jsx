@@ -8,6 +8,7 @@ import Dashboard from './features/dashboard/Dashboard';
 import Attendance from './features/attendance/Attendance';
 import Leave from './features/leave/LeaveRequest';
 import Settings from './features/settings/setting';
+import Profile from './features/profile/Profile';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/leave" element={<Leave />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );

@@ -118,11 +118,11 @@ export default function Leave() {
 
     const handleNavClick = (id) => {
         setActiveNav(id);
-        if (id === 'dashboard') {
-            navigate('/dashboard', { replace: true });
-        } else if (id === 'attendance') {
-            navigate('/attendance', { replace: true });
-        }
+        if (id === 'dashboard') navigate('/dashboard', { replace: true });
+        else if (id === 'attendance') navigate('/attendance', { replace: true });
+        else if (id === 'leave') navigate('/leave', { replace: true });
+        else if (id === 'profile') navigate('/profile', { replace: true });
+        else if (id === 'settings') navigate('/settings', { replace: true });
     };
 
     const handleLogoutClick = () => {

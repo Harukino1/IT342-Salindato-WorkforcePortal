@@ -1,4 +1,4 @@
-package edu.cit.salindato.workforceportal.features.leave.model;
+package edu.cit.salindato.workforceportal.features.leave_request.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package edu.cit.salindato.workforceportal.features.leave.controller;
+package edu.cit.salindato.workforceportal.features.leave_request.controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import edu.cit.salindato.workforceportal.features.leave.dto.LeaveRequestPayload;
-import edu.cit.salindato.workforceportal.features.leave.model.LeaveRequest;
-import edu.cit.salindato.workforceportal.features.leave.service.LeaveRequestService;
+import edu.cit.salindato.workforceportal.features.leave_request.dto.LeaveRequestPayload;
+import edu.cit.salindato.workforceportal.features.leave_request.model.LeaveRequest;
+import edu.cit.salindato.workforceportal.features.leave_request.service.LeaveRequestService;
 
 @RestController
 @RequestMapping("/api/leaves")

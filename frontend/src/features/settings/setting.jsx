@@ -1,0 +1,199 @@
+import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import './setting.css';
+
+const NAV_ITEMS = [
+	{ id: 'dashboard', label: 'Dashboard' },
+	{ id: 'attendance', label: 'Attendance' },
+	{ id: 'leave', label: 'Leave' },
+	{ id: 'profile', label: 'Profile' },
+	{ id: 'settings', label: 'Settings' },
+];
+
+function formatDateTime(date) {
+	return date.toLocaleDateString('en-US', {
+		weekday: 'long',
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+	}) + ' | ' + date.toLocaleTimeString('en-US', {
+		hour: '2-digit',
+		minute: '2-digit',
+		second: '2-digit',
+	});
+}
+
+export default function Settings() {
+	const navigate = useNavigate();
+	const [activeNav, setActiveNav] = useState('settings');
+	const [currentTime, setCurrentTime] = useState(new Date());
+	const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+	const [oldPassword, setOldPassword] = useState('');
+	const [newPassword, setNewPassword] = useState('');
+	const [isSaving, setIsSaving] = useState(false);
+	const [message, setMessage] = useState('');
+	const [error, setError] = useState('');
+
+	useEffect(() => {
+		const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+		return () => clearInterval(timer);
+	}, []);
+
+	const handleNavClick = (id) => {
+		setActiveNav(id);
+		if (id === 'dashboard') navigate('/dashboard', { replace: true });
+		else if (id === 'attendance') navigate('/attendance', { replace: true });
+		else if (id === 'leave') navigate('/leave', { replace: true });
+		else if (id === 'profile') navigate('/profile', { replace: true });
+		else if (id === 'settings') navigate('/settings', { replace: true });
+	};
+
+	const handleLogoutClick = () => setShowLogoutConfirm(true);
+	const handleLogoutCancel = () => setShowLogoutConfirm(false);
+
+	const handleLogoutConfirm = async () => {
+		const token = localStorage.getItem('token');
+		try {
+			await axios.post('http://localhost:8080/api/auth/logout', {}, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+		} catch (err) {
+			console.error('Logout error', err);
+		} finally {
+			localStorage.removeItem('token');
+			navigate('/');
+		}
+	};
+
+	const handleSave = useCallback(async () => {
+		setMessage('');
+		setError('');
+		if (!oldPassword || !newPassword) {
+			setError('Please fill both fields.');
+			return;
+		}
+		if (newPassword.length < 8) {
+			setError('New password must be at least 8 characters long.');
+			return;
+		}
+		const token = localStorage.getItem('token');
+		if (!token) {
+			navigate('/');
+			return;
+		}
+
+		try {
+			setIsSaving(true);
+			// Attempt to change password (backend endpoint assumed)
+			await axios.post('http://localhost:8080/api/auth/change-password', {
+				oldPassword,
+				newPassword,
+			}, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+			setMessage('Password updated successfully.');
+			setOldPassword('');
+			setNewPassword('');
+		} catch (err) {
+			console.error('Error changing password', err);
+			setError(err.response?.data?.message || 'Failed to update password');
+			if (err.response?.status === 401) {
+				localStorage.removeItem('token');
+				navigate('/');
+			}
+		} finally {
+			setIsSaving(false);
+		}
+	}, [oldPassword, newPassword, navigate]);
+
+	return (
+		<div className="shell">
+			{showLogoutConfirm && (
+				<div className="modal-overlay">
+					<div className="modal-content">
+						<h3>Confirm Logout</h3>
+						<p>Are you sure you want to logout?</p>
+						<div className="modal-buttons">
+							<button className="btn-cancel" onClick={handleLogoutCancel}>Cancel</button>
+							<button className="btn-confirm" onClick={handleLogoutConfirm}>Logout</button>
+						</div>
+					</div>
+				</div>
+			)}
+
+			<aside className="sidebar">
+				<div className="sidebar__brand">
+					<span className="logo">WorkForce<br />Portal</span>
+				</div>
+
+				<div className="nav">
+					{NAV_ITEMS.map(({ id, label }) => (
+						<div
+							key={id}
+							className={`nav-item ${activeNav === id ? 'nav-item--active' : ''}`}
+							onClick={() => handleNavClick(id)}
+							role="button"
+							aria-current={activeNav === id ? 'page' : undefined}
+						>
+							{label}
+						</div>
+					))}
+				</div>
+
+				<div className="sidebar__spacer" />
+
+				<button className="sidebar__logout" type="button" onClick={handleLogoutClick}>
+					Logout
+				</button>
+			</aside>
+
+			<main className="main">
+				<div className="content">
+					<div className="page-header">
+						<h1 className="page-title">Settings</h1>
+						<span className="page-datetime">{formatDateTime(currentTime)}</span>
+					</div>
+
+					<div className="card settings-card">
+						<div className="settings-card__inner">
+							<div className="form-row">
+								<div className="form-group">
+									<label>Old Password</label>
+									<input
+										type="password"
+										value={oldPassword}
+										onChange={(e) => setOldPassword(e.target.value)}
+										placeholder="Enter old password"
+									/>
+								</div>
+
+								<div className="form-group">
+									<label>New Password</label>
+									<input
+										type="password"
+										value={newPassword}
+										onChange={(e) => setNewPassword(e.target.value)}
+										placeholder="Enter new password"
+									/>
+								</div>
+							</div>
+
+							{error && <div className="form-error">{error}</div>}
+							{message && <div className="form-message">{message}</div>}
+
+							<div className="settings-actions">
+								<button className="btn-confirm" onClick={handleSave} disabled={isSaving}>
+									{isSaving ? 'Saving...' : 'Save Changes'}
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	);
+}
+
+

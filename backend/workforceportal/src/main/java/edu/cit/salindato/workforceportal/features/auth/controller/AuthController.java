@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.cit.salindato.workforceportal.features.auth.dto.AuthRequestDTO;
 import edu.cit.salindato.workforceportal.features.auth.dto.AuthResponseDTO;
+import edu.cit.salindato.workforceportal.features.auth.dto.ChangePasswordRequestDTO;
 import edu.cit.salindato.workforceportal.features.auth.dto.UserRegistrationDTO;
 import edu.cit.salindato.workforceportal.features.auth.model.User;
 import edu.cit.salindato.workforceportal.features.auth.service.AuthService;
@@ -85,6 +86,33 @@ public class AuthController {
             Map<String, String> error = new HashMap<>();
             error.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+        }
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @RequestHeader("Authorization") String token,
+            @RequestBody ChangePasswordRequestDTO request
+    ) {
+        try {
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            authService.changePassword(token, request);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Password updated successfully");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+
+            HttpStatus status = HttpStatus.BAD_REQUEST;
+            if ("Invalid or expired session".equals(e.getMessage())) {
+                status = HttpStatus.UNAUTHORIZED;
+            }
+            return ResponseEntity.status(status).body(error);
         }
     }
 

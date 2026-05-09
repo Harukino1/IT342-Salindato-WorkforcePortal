@@ -181,15 +181,11 @@ export default function Attendance() {
 
     const handleNavClick = (id) => {
         setActiveNav(id);
-        if (id === 'dashboard') {
-            navigate('/dashboard', { replace: true });
-        } else if (id === 'attendance') {
-            // Stay on the same page, do nothing
-        } else if (id === 'leave') {
-            navigate('/leave', { replace: true });
-        } else if (id === 'profile') {
-            navigate('/profile', { replace: true });
-        }
+        if (id === 'dashboard') navigate('/dashboard', { replace: true });
+        else if (id === 'attendance') {/* stay */}
+        else if (id === 'leave') navigate('/leave', { replace: true });
+        else if (id === 'profile') navigate('/profile', { replace: true });
+        else if (id === 'settings') navigate('/settings', { replace: true });
     };
 
     const handleLogoutClick = () => {

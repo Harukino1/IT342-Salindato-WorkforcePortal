@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 
 import Login from './features/auth/Login';
@@ -8,6 +8,7 @@ import Dashboard from './features/dashboard/Dashboard';
 import Attendance from './features/attendance/Attendance';
 import Leave from './features/leave/LeaveRequest';
 import Settings from './features/settings/setting';
+import Profile from './features/profile/Profile.jsx';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/leave" element={<Leave />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

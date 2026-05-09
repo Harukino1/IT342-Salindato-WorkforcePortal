@@ -38,4 +38,6 @@ public class User {
     private String status;
 
     private String token;
+    @Field("avatar_url")
+    private String avatarUrl;
 }

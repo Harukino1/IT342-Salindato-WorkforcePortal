@@ -126,7 +126,7 @@ const Dashboard = () => {
                     <button className="nav-item active">Dashboard</button>
                     <button className="nav-item" onClick={() => navigate('/attendance')}>Attendance</button>
                     <button className="nav-item">Leave</button>
-                    <button className="nav-item">Profile</button>
+                    <button className="nav-item" onClick={() => navigate('/profile')}>Profile</button>
                     <button className="nav-item">Settings</button>
                 </nav>
 

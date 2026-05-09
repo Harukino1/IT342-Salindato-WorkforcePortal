@@ -431,6 +431,17 @@
   background: #c82333;
 }
 
+/* Inline form error */
+.form-error {
+  margin-top: 12px;
+  color: #f87171; /* red-ish */
+  background: rgba(248, 113, 113, 0.06);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(248, 113, 113, 0.12);
+  font-size: 13px;
+}
+
 /* Loading State */
 .profile-loading {
   display: flex;

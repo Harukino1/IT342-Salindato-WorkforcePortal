@@ -12,6 +12,7 @@ const Profile = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [activeNav, setActiveNav] = useState('profile');
     const [avatarPreview, setAvatarPreview] = useState(null);
+    const [formError, setFormError] = useState('');
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -110,22 +111,39 @@ const Profile = () => {
         }
 
         try {
+            setFormError('');
             setIsSaving(true);
-            const data = new FormData();
-            data.append('firstName', formData.firstName);
-            data.append('lastName', formData.lastName);
-            data.append('phoneNumber', formData.phoneNumber);
 
+            let response = null;
+
+            // If user provided an avatar file, send multipart/form-data
             if (formData.avatar) {
+                const data = new FormData();
+                data.append('firstName', formData.firstName);
+                data.append('lastName', formData.lastName);
+                data.append('phoneNumber', formData.phoneNumber);
                 data.append('avatar', formData.avatar);
-            }
 
-            const response = await axios.put('http://localhost:8080/api/auth/user/profile', data, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+                response = await axios.put('http://localhost:8080/api/auth/user/profile', data, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+            } else {
+                // Send JSON when there's no file (some backends expect this)
+                const payload = {
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    phoneNumber: formData.phoneNumber,
+                };
+                response = await axios.put('http://localhost:8080/api/auth/user/profile', payload, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+            }
 
             setUser(response.data);
             setOriginalFormData({
@@ -144,8 +162,13 @@ const Profile = () => {
                 avatar: null
             }));
         } catch (error) {
+            // Build a helpful error message for debugging
             console.error('Error saving profile:', error);
-            alert('Error saving profile. Please try again.');
+            const status = error.response?.status;
+            const serverMessage = error.response?.data?.message || error.response?.data || error.message;
+            const alertMsg = `Error saving profile${status ? ` (status ${status})` : ''}.\n${serverMessage}`;
+            alert(alertMsg);
+            setFormError(serverMessage?.toString() || 'Error saving profile.');
         } finally {
             setIsSaving(false);
         }
@@ -369,6 +392,9 @@ const Profile = () => {
                                             Cancel
                                         </button>
                                     </>
+                                )}
+                                {formError && (
+                                    <div className="form-error" role="alert">{formError}</div>
                                 )}
                             </div>
                         </div>

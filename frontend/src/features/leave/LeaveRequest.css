@@ -11,10 +11,10 @@
   height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: radial-gradient(circle at top, #1a1a1a, #000);
-  overflow: hidden;
+  overflow: hidden; /* Prevents outer scroll */
   color: #e5e7eb;
-  gap: 30px;
-  padding: 30px;
+  gap: 20px; /* Reduced from 30px */
+  padding: 20px; /* Reduced from 30px */
   box-sizing: border-box;
 }
 
@@ -146,8 +146,8 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  overflow: hidden;
+  gap: 12px; /* Reduced from 20px to pull sections together */
+  overflow: hidden; /* Important: keeps child overflows internal */
 }
 
 .page-header {
@@ -195,14 +195,16 @@
 .leave-balance-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px; /* Reduced gap between header and cards */
+  padding: 18px 25px; /* Slightly tighter padding */
+  flex-shrink: 0; /* Prevents this header from squishing */
 }
 
 .balance-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 4px; /* Reduced margin */
 }
 
 .balance-title {
@@ -263,27 +265,25 @@
 
 /* ── Top and Bottom Rows ── */
 .top-row {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  flex: 1.2; /* Gives slightly more room to pending requests */
   min-height: 0;
-  flex: 1;
 }
 
 .bottom-row {
+  flex: 1; /* Equal weight for recent leaves and stats */
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.2fr 0.8fr; /* Gives stats slightly less width to prioritize the list */
   gap: 16px;
-  flex: 1;
   min-height: 0;
 }
 
 /* Request Tables */
 .request-table-wrap {
   flex: 1;
-  min-height: 0;
   overflow-y: auto;
   border-radius: 10px;
+  scrollbar-width: thin; /* Clean look for Firefox */
+  scrollbar-color: #2d3748 transparent;
 }
 
 .request-table {
@@ -363,7 +363,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -371,57 +371,135 @@
 }
 
 .modal-content {
-  background: #ffffff;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
-  max-width: 420px;
+  background: #0f0f0f;
+  border: 1px solid #1f2933;
+  padding: 2.5rem;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  max-width: 600px;
   width: 90%;
-  text-align: center;
+  text-align: left;
 }
 
 .modal-content h3 {
-  margin: 0 0 1rem 0;
-  color: #333;
+  margin: 0 0 1.5rem 0;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .modal-content p {
   margin: 0 0 1.5rem 0;
-  color: #555;
+  color: #e5e7eb;
 }
 
 .modal-buttons {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 .btn-cancel,
 .btn-confirm {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 1rem;
+  font-weight: 600;
   transition: all 0.2s ease;
 }
 
 .btn-cancel {
-  background: #e0e0e0;
-  color: #333;
+  background: #2d3748;
+  color: #e5e7eb;
 }
 
 .btn-cancel:hover {
-  background: #d0d0d0;
+  background: #3d4757;
+}
+
+.btn-cancel:disabled {
+  background: #2d3748;
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-confirm {
-  background: #dc3545;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
   color: #ffffff;
 }
 
 .btn-confirm:hover {
-  background: #c82333;
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+}
+
+.btn-confirm:disabled {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Modal form styles */
+.modal-form-group {
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #e5e7eb;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.modal-form-group input,
+.modal-form-group select,
+.modal-form-group textarea {
+  background: #1a1a1a;
+  border: 1px solid #2d3748;
+  color: #e5e7eb;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border 0.2s ease;
+}
+
+.modal-form-group input:focus,
+.modal-form-group select:focus,
+.modal-form-group textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.modal-form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.modal-total-days {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #e5e7eb;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+}
+
+.modal-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 14px;
 }
 
 /* Empty State */
@@ -432,5 +510,67 @@
   height: 100%;
   color: #818cf8;
   font-size: 14px;
+}
+
+/* ════════════════════════════
+   LEAVE STATISTICS GRID
+════════════════════════════ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px; /* Tighter gap to help fit boxes */
+  margin-top: 4px;
+  flex: 1;
+}
+
+.stat-item {
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid #1f2933;
+  border-radius: 12px;
+  padding: 10px 5px; /* Significantly reduced padding so text doesn't wrap/overlap */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.2s ease;
+  min-height: 0; /* Allows it to shrink if needed */
+}
+
+.stat-item:hover {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.stat-label {
+  font-size: 11px; /* Smaller font to prevent horizontal overflow */
+  color: #818cf8;
+  font-weight: 500;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap; /* Keeps label on one line */
+}
+
+.stat-value {
+  font-size: 22px; /* Reduced from 28px to ensure fit */
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.stat-value--total {
+  color: #818cf8;
+}
+
+.stat-value--approved {
+  color: #34d399;
+}
+
+.stat-value--pending {
+  color: #fbbf24;
+}
+
+.stat-value--rejected {
+  color: #f87171;
 }
 

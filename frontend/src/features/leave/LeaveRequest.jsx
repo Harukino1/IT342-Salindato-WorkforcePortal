@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./LeaveRequest.css";
@@ -10,12 +10,6 @@ const NAV_ITEMS = [
     { id: "leave",      label: "Leave" },
     { id: "profile",    label: "Profile" },
     { id: "settings",   label: "Settings" },
-];
-
-const LEAVE_TYPES = [
-    { type: "Vacation", days: 5 },
-    { type: "Sick", days: 5 },
-    { type: "Other", days: 5 },
 ];
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -68,6 +62,17 @@ export default function Leave() {
     const [pendingRequests, setPendingRequests] = useState([]);
     const [recentLeaves, setRecentLeaves] = useState([]);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const [showSubmitModal, setShowSubmitModal] = useState(false);
+    const [isSubmittingLeave, setIsSubmittingLeave] = useState(false);
+    const [leaveForm, setLeaveForm] = useState({
+        subject: '',
+        leaveType: 'Vacation',
+        startDate: new Date().toISOString().slice(0,10),
+        endDate: new Date().toISOString().slice(0,10),
+        totalDays: 1,
+        body: '',
+    });
+    const [formError, setFormError] = useState('');
 
     // Live clock — updates every second
     useEffect(() => {
@@ -75,11 +80,7 @@ export default function Leave() {
         return () => clearInterval(timer);
     }, []);
 
-    useEffect(() => {
-        fetchLeaveRequests();
-    }, []);
-
-    const fetchLeaveRequests = async () => {
+    const fetchLeaveRequests = useCallback(async () => {
         const token = localStorage.getItem('token');
 
         if (!token) {
@@ -109,7 +110,11 @@ export default function Leave() {
                 navigate('/');
             }
         }
-    };
+    }, [navigate]);
+
+    useEffect(() => {
+        fetchLeaveRequests();
+    }, [fetchLeaveRequests]);
 
     const handleNavClick = (id) => {
         setActiveNav(id);
@@ -117,9 +122,6 @@ export default function Leave() {
             navigate('/dashboard', { replace: true });
         } else if (id === 'attendance') {
             navigate('/attendance', { replace: true });
-        } else if (id === 'leave') {
-            // Stay on the same page
-            return;
         }
     };
 
@@ -149,8 +151,90 @@ export default function Leave() {
     };
 
     const handleSubmitLeave = () => {
-        // TODO: Open modal or navigate to submit leave page
-        console.log('Submit leave clicked');
+        setFormError('');
+        // reset form to defaults
+        setLeaveForm({
+            subject: '',
+            leaveType: 'Vacation',
+            startDate: new Date().toISOString().slice(0,10),
+            endDate: new Date().toISOString().slice(0,10),
+            totalDays: 1,
+            body: '',
+        });
+        setShowSubmitModal(true);
+    };
+
+    function calcTotalDaysInclusive(startIso, endIso) {
+        if (!startIso || !endIso) return 0;
+        const s = new Date(startIso);
+        const e = new Date(endIso);
+        // Use UTC days to avoid DST/local timezone issues
+        const utc1 = Date.UTC(s.getFullYear(), s.getMonth(), s.getDate());
+        const utc2 = Date.UTC(e.getFullYear(), e.getMonth(), e.getDate());
+        const diff = Math.floor((utc2 - utc1) / (24 * 60 * 60 * 1000));
+        return diff >= 0 ? diff + 1 : 0;
+    }
+
+    const handleLeaveFieldChange = (field, value) => {
+        setLeaveForm((prev) => {
+            const next = { ...prev, [field]: value };
+            if (field === 'startDate' || field === 'endDate') {
+                next.totalDays = calcTotalDaysInclusive(next.startDate, next.endDate);
+            }
+            return next;
+        });
+    };
+
+    const handleLeaveCancel = () => {
+        setShowSubmitModal(false);
+        setFormError('');
+    };
+
+    const handleLeaveSubmit = async () => {
+        setFormError('');
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/');
+            return;
+        }
+
+        const { subject, leaveType, startDate, endDate, totalDays, body } = leaveForm;
+        if (!startDate || !endDate) {
+            setFormError('Please select both start and end dates.');
+            return;
+        }
+        if (totalDays <= 0) {
+            setFormError('End date must be the same or after the start date.');
+            return;
+        }
+
+        const payload = {
+            subject: subject || `${leaveType} Leave Request`,
+            leaveType,
+            startDate, // backend expects ISO date (yyyy-mm-dd)
+            endDate,
+            totalDays,
+            body,
+        };
+
+        try {
+            setIsSubmittingLeave(true);
+            await axios.post('http://localhost:8080/api/leave-requests', payload, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setShowSubmitModal(false);
+            // refresh list
+            await fetchLeaveRequests();
+        } catch (err) {
+            console.error('Error submitting leave:', err);
+            setFormError(err.response?.data?.message || 'Failed to submit leave request');
+            if (err.response?.status === 401) {
+                localStorage.removeItem('token');
+                navigate('/');
+            }
+        } finally {
+            setIsSubmittingLeave(false);
+        }
     };
 
     return (
@@ -163,6 +247,79 @@ export default function Leave() {
                         <div className="modal-buttons">
                             <button className="btn-cancel" onClick={handleLogoutCancel}>Cancel</button>
                             <button className="btn-confirm" onClick={handleLogoutConfirm}>Logout</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showSubmitModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h3>Submit Leave Request</h3>
+                        <div>
+                            <div className="modal-form-group">
+                                <label>Leave Type</label>
+                                <select
+                                    value={leaveForm.leaveType}
+                                    onChange={(e) => handleLeaveFieldChange('leaveType', e.target.value)}
+                                >
+                                    <option>Vacation</option>
+                                    <option>Sick</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+
+                            <div className="modal-form-group">
+                                <label>Start Date</label>
+                                <input
+                                    type="date"
+                                    value={leaveForm.startDate}
+                                    onChange={(e) => handleLeaveFieldChange('startDate', e.target.value)}
+                                />
+                            </div>
+
+                            <div className="modal-form-group">
+                                <label>End Date</label>
+                                <input
+                                    type="date"
+                                    value={leaveForm.endDate}
+                                    onChange={(e) => handleLeaveFieldChange('endDate', e.target.value)}
+                                />
+                            </div>
+
+                            <div className="modal-total-days">
+                                <span>Total Days:</span> <strong>{leaveForm.totalDays}</strong>
+                            </div>
+
+                            <div className="modal-form-group">
+                                <label>Subject</label>
+                                <input
+                                    type="text"
+                                    value={leaveForm.subject}
+                                    onChange={(e) => handleLeaveFieldChange('subject', e.target.value)}
+                                    placeholder="Brief subject (optional)"
+                                />
+                            </div>
+
+                            <div className="modal-form-group">
+                                <label>Message</label>
+                                <textarea
+                                    value={leaveForm.body}
+                                    onChange={(e) => handleLeaveFieldChange('body', e.target.value)}
+                                    placeholder="Explain your leave request..."
+                                />
+                            </div>
+
+                            {formError && (
+                                <div className="modal-error">{formError}</div>
+                            )}
+
+                            <div className="modal-buttons">
+                                <button className="btn-cancel" type="button" onClick={handleLeaveCancel} disabled={isSubmittingLeave}>Cancel</button>
+                                <button className="btn-confirm" type="button" onClick={handleLeaveSubmit} disabled={isSubmittingLeave}>
+                                    {isSubmittingLeave ? 'Submitting...' : 'Submit Leave'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -213,12 +370,15 @@ export default function Leave() {
                             </button>
                         </div>
                         <div className="balance-cards">
-                            {LEAVE_TYPES.map(({ type, days }) => (
-                                <div key={type} className="balance-card">
-                                    <div className="balance-card__type">{type}</div>
-                                    <div className="balance-card__days">{days} days</div>
-                                </div>
-                            ))}
+                            {['Vacation', 'Sick', 'Other'].map((type) => {
+                                const count = [...pendingRequests, ...recentLeaves].filter(r => r.leaveType === type).length;
+                                return (
+                                    <div key={type} className="balance-card">
+                                        <div className="balance-card__type">{type}</div>
+                                        <div className="balance-card__days">{count}</div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -279,14 +439,14 @@ export default function Leave() {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {recentLeaves.length === 0 && (
+                                    {recentLeaves.filter(l => l.status === 'APPROVED').length === 0 && (
                                         <tr>
                                             <td colSpan="4" style={{ textAlign: 'center', color: '#818cf8' }}>
-                                                No recent leaves.
+                                                No approved leaves.
                                             </td>
                                         </tr>
                                     )}
-                                    {recentLeaves.map((leave) => (
+                                    {recentLeaves.filter(l => l.status === 'APPROVED').map((leave) => (
                                         <tr key={leave.id}>
                                             <td>{leave.leaveType || "-"}</td>
                                             <td>
@@ -307,10 +467,23 @@ export default function Leave() {
 
                         <div className="card">
                             <p className="card__title">Leave Statistics</p>
-                            <div style={{ color: '#818cf8', textAlign: 'center', marginTop: '20px' }}>
-                                <p>Total Leave Requests: <span style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '20px' }}>{pendingRequests.length + recentLeaves.length}</span></p>
-                                <p style={{ marginTop: '15px' }}>Approved: <span style={{ color: '#34d399', fontWeight: 'bold', fontSize: '20px' }}>{recentLeaves.filter(l => l.status === 'APPROVED').length}</span></p>
-                                <p style={{ marginTop: '15px' }}>Pending: <span style={{ color: '#fbbf24', fontWeight: 'bold', fontSize: '20px' }}>{pendingRequests.length}</span></p>
+                            <div className="stats-grid">
+                                <div className="stat-item">
+                                    <span className="stat-label">Total Requests</span>
+                                    <span className="stat-value stat-value--total">{pendingRequests.length + recentLeaves.length}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Approved</span>
+                                    <span className="stat-value stat-value--approved">{recentLeaves.filter(l => l.status === 'APPROVED').length}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Pending</span>
+                                    <span className="stat-value stat-value--pending">{pendingRequests.length}</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Rejected</span>
+                                    <span className="stat-value stat-value--rejected">{recentLeaves.filter(l => l.status === 'REJECTED').length}</span>
+                                </div>
                             </div>
                         </div>
                     </div>

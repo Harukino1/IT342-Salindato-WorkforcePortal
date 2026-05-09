@@ -283,13 +283,33 @@
   overflow-y: auto;
   border-radius: 10px;
   scrollbar-width: thin; /* Clean look for Firefox */
-  scrollbar-color: #2d3748 transparent;
+  scrollbar-color: #475569 #111827;
+}
+
+.request-table-wrap::-webkit-scrollbar {
+  width: 10px;
+}
+
+.request-table-wrap::-webkit-scrollbar-track {
+  background: #111827;
+  border-radius: 999px;
+}
+
+.request-table-wrap::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4f46e5, #6366f1);
+  border-radius: 999px;
+  border: 2px solid #111827;
+}
+
+.request-table-wrap::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #6366f1, #818cf8);
 }
 
 .request-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  table-layout: fixed;
 }
 
 .request-table thead tr {
@@ -321,6 +341,37 @@
 .request-table td {
   padding: 14px 8px;
   color: #e5e7eb;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.request-table th:first-child,
+.request-table td:first-child {
+  width: 18%;
+}
+
+.request-table th:nth-child(2),
+.request-table td:nth-child(2) {
+  width: 42%;
+  text-align: center;
+}
+
+.request-table th:nth-child(3),
+.request-table td:nth-child(3) {
+  width: 12%;
+  text-align: center;
+}
+
+.request-table th:nth-child(4),
+.request-table td:nth-child(4) {
+  width: 18%;
+  text-align: center;
+}
+
+.request-table td:first-child {
+  color: #818cf8;
 }
 
 .status-badge__pending {

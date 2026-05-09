@@ -100,4 +100,13 @@ public class AuthService {
         user.setStatus(newStatus);
         userRepository.save(user);
     }
+
+    @Transactional
+    public User updateUserProfile(User user, String firstName, String lastName, String phoneNumber, String avatarUrl) {
+        if (firstName != null) user.setFirstName(firstName);
+        if (lastName != null) user.setLastName(lastName);
+        if (phoneNumber != null) user.setPhoneNumber(phoneNumber);
+        if (avatarUrl != null) user.setAvatarUrl(avatarUrl);
+        return userRepository.save(user);
+    }
 }

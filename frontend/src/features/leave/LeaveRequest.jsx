@@ -122,6 +122,8 @@ export default function Leave() {
             navigate('/dashboard', { replace: true });
         } else if (id === 'attendance') {
             navigate('/attendance', { replace: true });
+        } else if (id === 'profile') {
+            navigate('/profile', { replace: true });
         }
     };
 

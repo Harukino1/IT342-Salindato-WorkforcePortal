@@ -121,6 +121,45 @@ public class AuthService {
     }
 
     @Transactional
+    public User updateUserProfile(
+            User currentUser,
+            String firstName,
+            String lastName,
+            String phoneNumber,
+            String avatarUrl
+    ) {
+        if (currentUser == null || currentUser.getId() == null) {
+            throw new RuntimeException("Invalid user session");
+        }
+
+        User user = userRepository.findById(currentUser.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String normalizedFirstName = firstName != null ? firstName.trim() : null;
+        String normalizedLastName = lastName != null ? lastName.trim() : null;
+        String normalizedPhoneNumber = phoneNumber != null ? phoneNumber.trim() : null;
+        String normalizedAvatarUrl = avatarUrl != null ? avatarUrl.trim() : null;
+
+        if (normalizedFirstName != null && !normalizedFirstName.isEmpty()) {
+            user.setFirstName(normalizedFirstName);
+        }
+
+        if (normalizedLastName != null && !normalizedLastName.isEmpty()) {
+            user.setLastName(normalizedLastName);
+        }
+
+        if (phoneNumber != null) {
+            user.setPhoneNumber(normalizedPhoneNumber);
+        }
+
+        if (normalizedAvatarUrl != null && !normalizedAvatarUrl.isEmpty()) {
+            user.setAvatarUrl(normalizedAvatarUrl);
+        }
+
+        return userRepository.save(user);
+    }
+
+    @Transactional
     public void updateUserStatus(String userId, String newStatus) {
         Optional<User> userOptional = userRepository.findById(userId);
 

@@ -29,12 +29,77 @@ const NAV_ITEMS = [
     { id: "settings",   label: "Settings" },
 ];
 
-/** @type {OverviewItem[]} */
-const MONTHLY_OVERVIEW = [
-    { label: "Present", value: "18 days", type: "present" },
-    { label: "Absent",  value: "2 days",  type: "absent"  },
-    { label: "Late",    value: "6 days",  type: "late"    },
-];
+// Helper: Determine if a clock-in time qualifies as present/late/absent (pure function)
+const getAttendanceStatus = (clockInTime) => {
+    if (!clockInTime) return "absent";
+    const clockInDate = parseBackendDate(clockInTime);
+    if (!clockInDate) return "absent";
+    const hour = clockInDate.getHours();
+    const minute = clockInDate.getMinutes();
+    const timeInMinutes = hour * 60 + minute;
+    const nineAm = 9 * 60;      // 9:00 AM
+    const tenAm = 10 * 60;      // 10:00 AM
+    if (timeInMinutes >= nineAm && timeInMinutes < tenAm) {
+        return "present";
+    } else if (timeInMinutes >= tenAm) {
+        return "late";
+    }
+    return "present"; // Early clock-in is also considered present
+};
+
+// Helper: Calculate monthly overview from records (pure function)
+const calculateMonthlyOverview = (records) => {
+    if (!records || records.length === 0) {
+        return [
+            { label: "Present", value: "0 days", type: "present" },
+            { label: "Absent",  value: "0 days",  type: "absent"  },
+            { label: "Late",    value: "0 days",  type: "late"    },
+        ];
+    }
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+
+    // Only count records from the current month up to today, and collapse duplicates per day.
+    const dailyRecords = new Map();
+
+    records.forEach((record) => {
+        const clockInDate = parseBackendDate(record.clockIn);
+        if (!clockInDate) return;
+
+        const recordYear = clockInDate.getFullYear();
+        const recordMonth = clockInDate.getMonth();
+        const recordDay = clockInDate.getDate();
+
+        if (recordYear !== year || recordMonth !== month) return;
+        if (recordDay > today.getDate()) return;
+
+        const dayKey = `${recordYear}-${String(recordMonth + 1).padStart(2, "0")}-${String(recordDay).padStart(2, "0")}`;
+        const existing = dailyRecords.get(dayKey);
+
+        // Keep the earliest clock-in for the day so the day-level status is deterministic.
+        if (!existing || clockInDate < existing.clockInDate) {
+            dailyRecords.set(dayKey, { ...record, clockInDate });
+        }
+    });
+
+    const workedDays = dailyRecords.size;
+    const lateDays = Array.from(dailyRecords.values()).reduce((count, record) => {
+        return count + (getAttendanceStatus(record.clockInDate) === "late" ? 1 : 0);
+    }, 0);
+
+    // Present = total unique days you clocked in.
+    // Absent = elapsed days this month minus unique worked days.
+    const elapsedDays = today.getDate();
+    const absentCount = Math.max(0, elapsedDays - workedDays);
+
+    return [
+        { label: "Present", value: `${workedDays} days`, type: "present" },
+        { label: "Absent",  value: `${absentCount} days`,  type: "absent"  },
+        { label: "Late",    value: `${lateDays} days`,  type: "late"    },
+    ];
+};
 
 // ── Component ──────────────────────────────────────────────────────────────
 export default function Attendance() {
@@ -48,6 +113,12 @@ export default function Attendance() {
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const [showClockOutConfirm, setShowClockOutConfirm] = useState(false);
     const [isOnBreak, setIsOnBreak] = useState(false);
+    const [monthlyOverview, setMonthlyOverview] = useState([
+        { label: "Present", value: "0 days", type: "present" },
+        { label: "Absent",  value: "0 days",  type: "absent"  },
+        { label: "Late",    value: "0 days",  type: "late"    },
+    ]);
+
     const todayKey = new Date().toISOString().slice(0, 10);
 
     const fetchAttendance = useCallback(async () => {
@@ -75,21 +146,27 @@ export default function Attendance() {
                 raw: record,
             }));
 
+            // Filter to ONLY today's record, strictly
             const today = records.find((record) => {
-                if (record.date === todayKey) return true;
                 const parsedClockIn = parseBackendDate(record.clockIn);
-                return parsedClockIn ? sameLocalDay(parsedClockIn, now) : false;
+                if (!parsedClockIn) return false;
+                return sameLocalDay(parsedClockIn, now);
             }) || null;
+
+            // Calculate monthly overview from all records
+            const overview = calculateMonthlyOverview(records);
 
             setIsClockedIn(Boolean(response.data?.isClockedIn));
             setTodayRecord(today);
             setIsOnBreak(Boolean(today?.status === "ON_BREAK"));
             setRecentActivity(mappedRecords);
+            setMonthlyOverview(overview);
         } catch (error) {
             console.error('Error fetching attendance:', error);
             localStorage.removeItem('token');
             navigate('/');
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigate, todayKey]);
 
     // Live clock — updates every second for HH/MM/SS working hours display
@@ -432,7 +509,7 @@ export default function Attendance() {
                         <div className="card">
                             <p className="card__title">Monthly Overview</p>
                             <div className="overview-list">
-                                {MONTHLY_OVERVIEW.map(({ label, value, type }) => (
+                                {monthlyOverview.map(({ label, value, type }) => (
                                     <div key={type} className={`overview-item overview-item--${type}`}>
                                         <span className="overview-item__label">{label}</span>
                                         <span className="overview-item__value">{value}</span>

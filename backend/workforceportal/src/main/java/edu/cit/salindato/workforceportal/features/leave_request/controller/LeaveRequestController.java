@@ -19,7 +19,7 @@ import edu.cit.salindato.workforceportal.features.leave_request.model.LeaveReque
 import edu.cit.salindato.workforceportal.features.leave_request.service.LeaveRequestService;
 
 @RestController
-@RequestMapping("/api/leaves")
+@RequestMapping({"/api/leave-requests", "/api/leaves"})
 public class LeaveRequestController {
 
     @Autowired
@@ -40,7 +40,7 @@ public class LeaveRequestController {
         }
     }
 
-    @GetMapping
+    @GetMapping({"", "/me"})
     public ResponseEntity<?> getMyLeaveRequests(@RequestHeader("Authorization") String token) {
         try {
             String parsedToken = parseBearerToken(token);

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -26,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -133,13 +135,20 @@ public class AuthController {
                 // Save uploaded file to resources/static/uploads
                 String uploadsDir = "src/main/resources/static/uploads";
                 File dir = new File(uploadsDir);
-                if (!dir.exists()) dir.mkdirs();
+                if (!dir.exists()) {
+                    boolean created = dir.mkdirs();
+                    if (!dir.exists() && !created) {
+                        Map<String, String> error = new HashMap<>();
+                        error.put("message", "Failed to create uploads directory");
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+                    }
+                }
                 String ext = "";
                 String original = avatar.getOriginalFilename();
                 if (original != null && original.contains(".")) {
                     ext = original.substring(original.lastIndexOf('.'));
                 }
-                String filename = UUID.randomUUID().toString() + ext;
+                String filename = UUID.randomUUID() + ext;
                 File dest = new File(dir, filename);
                 try {
                     avatar.transferTo(dest);

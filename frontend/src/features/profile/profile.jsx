@@ -114,7 +114,7 @@ const Profile = () => {
             setFormError('');
             setIsSaving(true);
 
-            let response = null;
+            let response;
 
             // If user provided an avatar file, send multipart/form-data
             if (formData.avatar) {
@@ -127,7 +127,6 @@ const Profile = () => {
                 response = await axios.put('http://localhost:8080/api/auth/user/profile', data, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data'
                     }
                 });
             } else {

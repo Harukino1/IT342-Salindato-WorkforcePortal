@@ -89,19 +89,6 @@ public class AuthService {
     }
 
     @Transactional
-    public void updateUserStatus(String userId, String newStatus) {
-        Optional<User> userOptional = userRepository.findById(userId);
-
-        if (userOptional.isEmpty()) {
-            throw new RuntimeException("User not found");
-        }
-
-        User user = userOptional.get();
-        user.setStatus(newStatus);
-        userRepository.save(user);
-    }
-
-    @Transactional
     public User updateUserProfile(User user, String firstName, String lastName, String phoneNumber, String avatarUrl) {
         if (firstName != null) user.setFirstName(firstName);
         if (lastName != null) user.setLastName(lastName);

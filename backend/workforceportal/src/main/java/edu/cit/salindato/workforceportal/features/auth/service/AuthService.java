@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.cit.salindato.workforceportal.features.auth.dto.AuthResponseDTO;
+import edu.cit.salindato.workforceportal.features.auth.dto.ChangePasswordRequestDTO;
 import edu.cit.salindato.workforceportal.features.auth.dto.UserRegistrationDTO;
 import edu.cit.salindato.workforceportal.features.auth.model.User;
 import edu.cit.salindato.workforceportal.features.auth.repository.UserRepository;
@@ -86,6 +87,37 @@ public class AuthService {
     public User getCurrentUser(String token) {
         return userRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Invalid or expired session"));
+    }
+
+    @Transactional
+    public void changePassword(String token, ChangePasswordRequestDTO payload) {
+        if (payload == null) {
+            throw new RuntimeException("Request body is required");
+        }
+
+        String oldPassword = payload.getOldPassword() != null ? payload.getOldPassword().trim() : "";
+        String newPassword = payload.getNewPassword() != null ? payload.getNewPassword().trim() : "";
+
+        if (oldPassword.isEmpty() || newPassword.isEmpty()) {
+            throw new RuntimeException("Old password and new password are required");
+        }
+
+        if (newPassword.length() < 8) {
+            throw new RuntimeException("New password must be at least 8 characters long");
+        }
+
+        User user = getCurrentUser(token);
+
+        if (!passwordEncoder.verify(oldPassword, user.getPassword())) {
+            throw new RuntimeException("Old password is incorrect");
+        }
+
+        if (passwordEncoder.verify(newPassword, user.getPassword())) {
+            throw new RuntimeException("New password must be different from old password");
+        }
+
+        user.setPassword(passwordEncoder.hash(newPassword));
+        userRepository.save(user);
     }
 
     @Transactional

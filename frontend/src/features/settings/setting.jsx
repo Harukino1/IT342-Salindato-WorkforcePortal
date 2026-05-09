@@ -46,6 +46,8 @@ export default function Settings() {
 		if (id === 'dashboard') navigate('/dashboard', { replace: true });
 		else if (id === 'attendance') navigate('/attendance', { replace: true });
 		else if (id === 'leave') navigate('/leave', { replace: true });
+		else if (id === 'profile') navigate('/profile', { replace: true });
+		else if (id === 'settings') navigate('/settings', { replace: true });
 	};
 
 	const handleLogoutClick = () => setShowLogoutConfirm(true);
@@ -70,6 +72,10 @@ export default function Settings() {
 		setError('');
 		if (!oldPassword || !newPassword) {
 			setError('Please fill both fields.');
+			return;
+		}
+		if (newPassword.length < 8) {
+			setError('New password must be at least 8 characters long.');
 			return;
 		}
 		const token = localStorage.getItem('token');

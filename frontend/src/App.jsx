@@ -8,7 +8,6 @@ import Dashboard from './features/dashboard/Dashboard';
 import Attendance from './features/attendance/Attendance';
 import Leave from './features/leave/LeaveRequest';
 import Settings from './features/settings/setting';
-import Profile from './features/profile/Profile';
 
 function App() {
   return (

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './setting.css';
+import './Setting.css';
 
 const NAV_ITEMS = [
 	{ id: 'dashboard', label: 'Dashboard' },
@@ -28,6 +28,7 @@ export default function Settings() {
 	const navigate = useNavigate();
 	const [activeNav, setActiveNav] = useState('settings');
 	const [currentTime, setCurrentTime] = useState(new Date());
+	const [loading, setLoading] = useState(true);
 	const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
 	const [oldPassword, setOldPassword] = useState('');
@@ -38,6 +39,7 @@ export default function Settings() {
 
 	useEffect(() => {
 		const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+		setLoading(false);
 		return () => clearInterval(timer);
 	}, []);
 
@@ -107,6 +109,15 @@ export default function Settings() {
 			setIsSaving(false);
 		}
 	}, [oldPassword, newPassword, navigate]);
+
+	if (loading) {
+		return (
+			<div className="page-loading" role="status" aria-live="polite" aria-busy="true">
+				<div className="page-loading__spinner" />
+				<span>Loading settings...</span>
+			</div>
+		);
+	}
 
 	return (
 		<div className="shell">

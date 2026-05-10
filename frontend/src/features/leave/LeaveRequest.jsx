@@ -59,6 +59,7 @@ export default function Leave() {
     const navigate = useNavigate();
     const [activeNav, setActiveNav]       = useState("leave");
     const [currentTime, setCurrentTime]   = useState(new Date());
+    const [loading, setLoading]           = useState(true);
     const [pendingRequests, setPendingRequests] = useState([]);
     const [recentLeaves, setRecentLeaves] = useState([]);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -109,6 +110,8 @@ export default function Leave() {
                 localStorage.removeItem('token');
                 navigate('/');
             }
+        } finally {
+            setLoading(false);
         }
     }, [navigate]);
 
@@ -236,6 +239,15 @@ export default function Leave() {
             setIsSubmittingLeave(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="page-loading" role="status" aria-live="polite" aria-busy="true">
+                <div className="page-loading__spinner" />
+                <span>Loading leave requests...</span>
+            </div>
+        );
+    }
 
     return (
         <div className="shell">

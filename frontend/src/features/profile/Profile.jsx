@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './profile.css';
+import './Profile.css';
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -219,6 +219,8 @@ const Profile = () => {
             navigate('/leave', { replace: true });
         } else if (id === 'profile') {
             // Stay on profile page
+        } else if (id === 'settings') {
+            navigate('/settings', { replace: true });
         }
     };
 

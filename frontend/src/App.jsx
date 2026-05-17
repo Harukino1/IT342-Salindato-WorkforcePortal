@@ -10,6 +10,7 @@ import Leave from './features/leave/LeaveRequest';
 import Settings from './features/settings/Setting';
 import Profile from './features/profile/Profile';
 import AdminDashboard from './features/admin_dashboard/AdminDashboard';
+import AdminAttendance from './features/admin_attendance/AdminAttendance';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/admin-attendance" element={<AdminAttendance />} />
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/leave" element={<Leave />} />
         <Route path="/settings" element={<Settings />} />

@@ -12,6 +12,8 @@ import Profile from './features/profile/Profile';
 import AdminDashboard from './features/admin_dashboard/AdminDashboard';
 import AdminAttendance from './features/admin_attendance/AdminAttendance';
 import AdminLeave from './features/admin_leave/AdminLeave';
+import AdminProfile from './features/admin_profile/AdminProfile';
+import AdminSettings from './features/admin_settings/AdminSettings';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-attendance" element={<AdminAttendance />} />
         <Route path="/admin-leave" element={<AdminLeave />} />
+        <Route path="/admin-profile" element={<AdminProfile />} />
+        <Route path="/admin-settings" element={<AdminSettings />} />
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/leave" element={<Leave />} />
         <Route path="/settings" element={<Settings />} />

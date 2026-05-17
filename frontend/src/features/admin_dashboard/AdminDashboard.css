@@ -1,26 +1,26 @@
-.admin-profile-card {
+.admin-page .admin-profile-card {
   padding: 12px 18px;
   border-radius: 12px;
 }
 
-.welcome-container {
+.admin-page .welcome-container {
   align-items: center;
   padding: 18px;
   min-height: 120px;
 }
 
-.welcome-content h1 {
+.admin-page .welcome-content h1 {
   font-size: 20px;
   color: #e5e7eb;
   margin: 0;
 }
 
-.welcome-content span {
+.admin-page .welcome-content span {
   font-weight: 700;
   color: #818cf8;
 }
 
-.admin-badge {
+.admin-page .admin-badge {
   display: inline-block;
   margin-top: 8px;
   background: rgba(99,102,241,0.12);
@@ -30,21 +30,21 @@
   font-size: 11px;
 }
 
-.admin-stats-stack {
+.admin-page .admin-stats-stack {
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 
-.dashboard {
+.admin-page .dashboard {
   overflow-x: hidden;
 }
 
-.main {
+.admin-page .main {
   padding: 18px !important;
 }
 
-.stats-row {
+.admin-page .stats-row {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
@@ -52,7 +52,7 @@
   align-items: start;
 }
 
-.stat-card {
+.admin-page .stat-card {
   background: linear-gradient(180deg, rgba(99,102,241,0.14), rgba(79,70,229,0.06));
   border: 1px solid rgba(99,102,241,0.12);
   border-radius: 10px;
@@ -64,21 +64,21 @@
   align-items: flex-start;
 }
 
-.stat-title {
+.admin-page .stat-title {
   font-size: 13px;
   color: #c7d2fe;
   margin-bottom: 6px;
   text-align: left;
 }
 
-.stat-value {
+.admin-page .stat-value {
   font-size: 16px;
   color: #eef2ff;
   font-weight: 800;
   text-align: left;
 }
 
-.bottom-row {
+.admin-page .bottom-row {
   display: grid;
   grid-template-columns: 65% 35%;
   gap: 16px;
@@ -86,34 +86,34 @@
   align-items: start;
 }
 
-.admin-announcement {
+.admin-page .admin-announcement {
   min-height: 220px;
 }
 
-.recent-leave {
+.admin-page .recent-leave {
   min-height: 220px;
 }
 
-.card {
+.admin-page .card {
   background: #0f0f0f;
   border-radius: 12px;
   padding: 16px;
   border: 1px solid #1f2933;
 }
 
-.card h3 {
+.admin-page .card h3 {
   color: #e5e7eb;
   margin-bottom: 10px;
 }
 
-.card-box {
+.admin-page .card-box {
   background: rgba(255,255,255,0.02);
   border-radius: 8px;
   padding: 12px;
   color: #e5e7eb;
 }
 
-.admin-announcement .card-box textarea {
+.admin-page .admin-announcement .card-box textarea {
   width: 100%;
   height: 120px;
   resize: none;
@@ -124,7 +124,7 @@
   color: #eef2ff;
 }
 
-.admin-announcement .dashboard-clock-in {
+.admin-page .admin-announcement .dashboard-clock-in {
   margin-top: 12px;
   background: linear-gradient(135deg,#6366f1,#4f46e5);
   color: #fff;
@@ -132,13 +132,13 @@
   border-radius: 8px;
 }
 
-.recent-leave .card-box ul {
+.admin-page .recent-leave .card-box ul {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.recent-leave .card-box li {
+.admin-page .recent-leave .card-box li {
   background: linear-gradient(180deg, rgba(99,102,241,0.12), rgba(79,70,229,0.08));
   padding: 12px;
   border-radius: 8px;
@@ -147,11 +147,11 @@
   border: 1px solid rgba(99,102,241,0.08);
 }
 @media (max-width: 900px) {
-  .stats-row {
+  .admin-page .stats-row {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .bottom-row {
+  .admin-page .bottom-row {
     grid-template-columns: 1fr;
   }
 }

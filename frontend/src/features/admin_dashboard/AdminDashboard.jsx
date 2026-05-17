@@ -31,7 +31,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="dashboard">
+    <div className="dashboard admin-page">
       <aside className="sidebar">
         <h2 className="logo">Workforce Portal</h2>
 

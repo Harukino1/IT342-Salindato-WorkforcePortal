@@ -61,6 +61,16 @@ export function formatShortDate(value) {
     });
 }
 
+export function formatDate(value) {
+    const date = parseBackendDate(value);
+    if (!date) return "-";
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+    });
+}
+
 export function formatDurationHM(totalMinutes) {
     if (!Number.isFinite(totalMinutes) || totalMinutes < 0) return "0h0m";
     const safeMinutes = Math.max(0, Math.floor(totalMinutes));
@@ -85,6 +95,28 @@ export function sameLocalDay(dateA, dateB) {
         dateA.getMonth() === dateB.getMonth() &&
         dateA.getDate() === dateB.getDate()
     );
+}
+
+export function getStatusBadgeClass(status) {
+    switch ((status || '').toString().toUpperCase()) {
+        case 'APPROVED':
+            return 'status-badge__approved';
+        case 'REJECTED':
+            return 'status-badge__rejected';
+        case 'PENDING':
+        default:
+            return 'status-badge__pending';
+    }
+}
+
+export function calcTotalDaysInclusive(startIso, endIso) {
+    if (!startIso || !endIso) return 0;
+    const s = new Date(startIso);
+    const e = new Date(endIso);
+    const utc1 = Date.UTC(s.getFullYear(), s.getMonth(), s.getDate());
+    const utc2 = Date.UTC(e.getFullYear(), e.getMonth(), e.getDate());
+    const diff = Math.floor((utc2 - utc1) / (24 * 60 * 60 * 1000));
+    return diff >= 0 ? diff + 1 : 0;
 }
 
 export function calculateAttendanceDurations(record, nowDate) {

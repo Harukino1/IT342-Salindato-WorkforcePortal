@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Setting.css';
+import { formatDateTime } from '../../shared/utils/utils';
 
 const NAV_ITEMS = [
 	{ id: 'dashboard', label: 'Dashboard' },
@@ -11,18 +12,7 @@ const NAV_ITEMS = [
 	{ id: 'settings', label: 'Settings' },
 ];
 
-function formatDateTime(date) {
-	return date.toLocaleDateString('en-US', {
-		weekday: 'long',
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric',
-	}) + ' | ' + date.toLocaleTimeString('en-US', {
-		hour: '2-digit',
-		minute: '2-digit',
-		second: '2-digit',
-	});
-}
+// formatDateTime moved to shared utils
 
 export default function Settings() {
 	const navigate = useNavigate();

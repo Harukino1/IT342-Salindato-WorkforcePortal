@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./LeaveRequest.css";
+import { formatDateTime, formatDate, getStatusBadgeClass, calcTotalDaysInclusive } from '../../shared/utils/utils';
 
 // ── Static data ────────────────────────────────────────────────────────────
 const NAV_ITEMS = [
@@ -12,47 +13,7 @@ const NAV_ITEMS = [
     { id: "settings",   label: "Settings" },
 ];
 
-// ── Helpers ────────────────────────────────────────────────────────────────
-function formatDateTime(date) {
-    return date.toLocaleDateString("en-US", {
-        weekday: "long",
-        year:    "numeric",
-        month:   "long",
-        day:     "numeric",
-    }) + " | " + date.toLocaleTimeString("en-US", {
-        hour:   "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-    });
-}
-
-function formatDate(date) {
-    if (!date) return "-";
-    if (typeof date === "string") {
-        return new Date(date).toLocaleDateString("en-US", {
-            month: "short",
-            day: "2-digit",
-            year: "numeric",
-        });
-    }
-    return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-    });
-}
-
-function getStatusBadgeClass(status) {
-    switch (status?.toUpperCase()) {
-        case "APPROVED":
-            return "status-badge__approved";
-        case "REJECTED":
-            return "status-badge__rejected";
-        case "PENDING":
-        default:
-            return "status-badge__pending";
-    }
-}
+// helpers moved to shared utils
 
 // ── Component ──────────────────────────────────────────────────────────────
 export default function Leave() {
@@ -167,16 +128,7 @@ export default function Leave() {
         setShowSubmitModal(true);
     };
 
-    function calcTotalDaysInclusive(startIso, endIso) {
-        if (!startIso || !endIso) return 0;
-        const s = new Date(startIso);
-        const e = new Date(endIso);
-        // Use UTC days to avoid DST/local timezone issues
-        const utc1 = Date.UTC(s.getFullYear(), s.getMonth(), s.getDate());
-        const utc2 = Date.UTC(e.getFullYear(), e.getMonth(), e.getDate());
-        const diff = Math.floor((utc2 - utc1) / (24 * 60 * 60 * 1000));
-        return diff >= 0 ? diff + 1 : 0;
-    }
+    // calcTotalDaysInclusive moved to shared utils
 
     const handleLeaveFieldChange = (field, value) => {
         setLeaveForm((prev) => {

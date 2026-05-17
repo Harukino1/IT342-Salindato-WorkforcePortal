@@ -1,4 +1,4 @@
-package edu.cit.salindato.workforceportal.dto;
+package edu.cit.salindato.workforceportal.features.auth.dto;
 
 import java.time.LocalDate;
 

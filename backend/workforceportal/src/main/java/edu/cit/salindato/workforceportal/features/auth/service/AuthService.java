@@ -38,7 +38,17 @@ public class AuthService {
         newUser.setLastName(userData.getLastName());
         newUser.setPassword(passwordEncoder.hash(userData.getPassword()));
         newUser.setPhoneNumber(userData.getPhoneNumber());
-        newUser.setRole(userData.getRole() != null ? userData.getRole() : "USER");
+        // Normalize role: default to "Member". Accept legacy 'USER' value and map to 'Member'.
+        String incomingRole = userData.getRole();
+        String normalizedRole;
+        if (incomingRole == null) {
+            normalizedRole = "Member";
+        } else if ("USER".equalsIgnoreCase(incomingRole)) {
+            normalizedRole = "Member";
+        } else {
+            normalizedRole = incomingRole;
+        }
+        newUser.setRole(normalizedRole);
         newUser.setStatus("ACTIVE");
 
         return userRepository.save(newUser);

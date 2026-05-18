@@ -1,34 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../../shared/hooks/useAuth';
 import './Dashboard.css';
 
 const Dashboard = () => {
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
+    const { user, token, logout } = useAuth();
     const [loading, setLoading] = useState(true);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const [isClockedIn, setIsClockedIn] = useState(false);
     const [isClockingIn, setIsClockingIn] = useState(false);
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            const token = localStorage.getItem('token');
-
+        const fetchAttendanceData = async () => {
             if (!token) {
                 navigate('/');
                 return;
             }
 
-            try{
-                const response = await axios.get('http://localhost:8080/api/auth/user/me', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                setUser(response.data);
-
+            try {
                 const attendanceResponse = await axios.get('http://localhost:8080/api/attendance/me', {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -36,35 +27,21 @@ const Dashboard = () => {
                 });
                 setIsClockedIn(Boolean(attendanceResponse.data?.isClockedIn));
             } catch (error) {
-                console.error('Error fetching user data:', error);
-                localStorage.removeItem('token');
-                navigate('/');
-            }finally{
+                console.error('Error fetching attendance data:', error);
+            } finally {
                 setLoading(false);
             }
         };
-        fetchUserData();
-    }, [navigate]);
+        fetchAttendanceData();
+    }, [token, navigate]);
 
     const handleLogoutClick = () => {
         setShowLogoutConfirm(true);
     };
 
     const handleLogoutConfirm = async () => {
-        const token = localStorage.getItem('token');
-
-        try{
-            await axios.post('http://localhost:8080/api/auth/logout', {}, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-        }catch (error) {
-            console.error('Error during logout:', error);
-        }finally {
-            localStorage.removeItem('token');
-            navigate('/');
-        }
+        await logout();
+        navigate('/');
     };
 
     const handleLogoutCancel = () => {
@@ -72,7 +49,6 @@ const Dashboard = () => {
     };
 
     const handleDashboardClockIn = async () => {
-        const token = localStorage.getItem('token');
         if (!token) {
             navigate('/');
             return;

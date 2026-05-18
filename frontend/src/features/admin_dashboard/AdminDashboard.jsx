@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../shared/hooks/useAuth';
 import '../dashboard/Dashboard.css'; // reuse base dashboard styles
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const NAV_ITEMS = [
     { id: 'dashboard', label: 'Dashboard' },
@@ -16,22 +19,41 @@ const AdminDashboard = () => {
 
   const handleNavClick = (id) => {
     if (id === 'dashboard') navigate('/admin-dashboard', { replace: true });
-    else if (id === 'attendance') navigate('/attendance', { replace: true });
-    else if (id === 'leave') navigate('/leave', { replace: true });
-    else if (id === 'profile') navigate('/profile', { replace: true });
-    else if (id === 'settings') navigate('/settings', { replace: true });
+    else if (id === 'attendance') navigate('/admin-attendance', { replace: true });
+    else if (id === 'leave') navigate('/admin-leave', { replace: true });
+    else if (id === 'profile') navigate('/admin-profile', { replace: true });
+    else if (id === 'settings') navigate('/admin-settings', { replace: true });
   };
 
-  // Sample static values for UI only
-  const stats = {
-    totalEmployees: 123,
-    presentToday: 99,
-    leavePending: 4,
-    lateThisMonth: 7,
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    await logout();
+    navigate('/');
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirm(false);
   };
 
   return (
     <div className="dashboard admin-page">
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Confirm Logout</h3>
+            <p>Are you sure you want to logout?</p>
+            <div className="modal-buttons">
+              <button className="btn-cancel" onClick={handleLogoutCancel}>Cancel</button>
+              <button className="btn-confirm" onClick={handleLogoutConfirm}>Logout</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <aside className="sidebar">
         <h2 className="logo">Workforce Portal</h2>
 
@@ -47,7 +69,7 @@ const AdminDashboard = () => {
           ))}
         </nav>
 
-        <button className="logout">Logout</button>
+        <button className="logout" onClick={handleLogoutClick}>Logout</button>
       </aside>
 
       <main className="main">
@@ -57,7 +79,7 @@ const AdminDashboard = () => {
             <h1>
               Welcome,
               <br />
-              <span>Doe, Jane</span>
+              <span>{user?.lastName}, {user?.firstName}</span>
             </h1>
             <div className="admin-badge">ADMIN</div>
           </div>
@@ -67,19 +89,19 @@ const AdminDashboard = () => {
           <div className="stats-row">
             <div className="stat-card">
               <div className="stat-title">Total Employees</div>
-              <div className="stat-value">{stats.totalEmployees}</div>
+              <div className="stat-value">123</div>
             </div>
             <div className="stat-card">
               <div className="stat-title">Present Today</div>
-              <div className="stat-value">{stats.presentToday}</div>
+              <div className="stat-value">99</div>
             </div>
             <div className="stat-card">
               <div className="stat-title">Leave Request</div>
-              <div className="stat-value">{stats.leavePending} pending</div>
+              <div className="stat-value">4 pending</div>
             </div>
             <div className="stat-card">
               <div className="stat-title">Late Employees</div>
-              <div className="stat-value">{stats.lateThisMonth} late this month</div>
+              <div className="stat-value">7 late this month</div>
             </div>
           </div>
 

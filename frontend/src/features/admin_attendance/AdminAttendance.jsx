@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../shared/hooks/useAuth';
 import '../dashboard/Dashboard.css';
 import '../admin_dashboard/AdminDashboard.css';
 import './AdminAttendance.css';
@@ -14,6 +15,8 @@ const NAV_ITEMS = [
 
 const AdminAttendance = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const stats = [
     { title: 'Present', value: 93 },
@@ -33,15 +36,35 @@ const AdminAttendance = () => {
   }));
 
   const handleNavClick = (id) => {
-    if (id === 'dashboard') navigate('/dashboard');
+    if (id === 'dashboard') navigate('/admin-dashboard');
     else if (id === 'attendance') navigate('/admin-attendance');
-    else if (id === 'leave') navigate('/leave');
-    else if (id === 'profile') navigate('/profile');
-    else if (id === 'settings') navigate('/settings');
+    else if (id === 'leave') navigate('/admin-leave');
+    else if (id === 'profile') navigate('/admin-profile');
+    else if (id === 'settings') navigate('/admin-settings');
+  };
+
+  const handleLogoutClick = () => setShowLogoutConfirm(true);
+  const handleLogoutCancel = () => setShowLogoutConfirm(false);
+  const handleLogoutConfirm = async () => {
+    await logout();
+    navigate('/');
   };
 
   return (
     <div className="dashboard admin-page">
+      {showLogoutConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Confirm Logout</h3>
+            <p>Are you sure you want to logout?</p>
+            <div className="modal-buttons">
+              <button className="btn-cancel" onClick={handleLogoutCancel}>Cancel</button>
+              <button className="btn-confirm" onClick={handleLogoutConfirm}>Logout</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <aside className="sidebar">
         <h2 className="logo">Workforce Portal</h2>
 
@@ -53,16 +76,14 @@ const AdminAttendance = () => {
           ))}
         </nav>
 
-        <button className="logout">Logout</button>
+        <button className="logout" onClick={handleLogoutClick}>Logout</button>
       </aside>
 
       <main className="main">
         <section className="welcome-container admin-profile-card">
           <div className="avatar">👤</div>
           <div className="welcome-content">
-            <h1>
-              Attendance
-            </h1>
+            <h1>Attendance</h1>
             <div className="admin-badge">ADMIN</div>
           </div>
         </section>
@@ -122,4 +143,3 @@ const AdminAttendance = () => {
 };
 
 export default AdminAttendance;
-

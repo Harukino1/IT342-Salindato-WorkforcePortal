@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../../shared/hooks/useAuth';
 import './Profile.css';
 
 const Profile = () => {
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
+    const { user, token, logout } = useAuth();
     const [loading, setLoading] = useState(true);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -28,48 +29,21 @@ const Profile = () => {
     });
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                navigate('/');
-                return;
-            }
-
-            try {
-                const response = await axios.get('http://localhost:8080/api/auth/user/me', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                setUser(response.data);
-                setFormData({
-                    firstName: response.data.firstName || '',
-                    lastName: response.data.lastName || '',
-                    phoneNumber: response.data.phoneNumber || '',
-                    avatar: null
-                });
-                setOriginalFormData({
-                    firstName: response.data.firstName || '',
-                    lastName: response.data.lastName || '',
-                    phoneNumber: response.data.phoneNumber || ''
-                });
-
-                if (response.data.avatarUrl) {
-                    setAvatarPreview(response.data.avatarUrl);
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                localStorage.removeItem('token');
-                navigate('/');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUserData();
-    }, [navigate]);
+        if (user) {
+            setFormData({
+                firstName: user.firstName || '',
+                lastName: user.lastName || '',
+                phoneNumber: user.phoneNumber || '',
+                avatar: null
+            });
+            setOriginalFormData({
+                firstName: user.firstName || '',
+                lastName: user.lastName || '',
+                phoneNumber: user.phoneNumber || ''
+            });
+            setLoading(false);
+        }
+    }, [user]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -103,8 +77,6 @@ const Profile = () => {
     };
 
     const handleSaveChanges = async () => {
-        const token = localStorage.getItem('token');
-
         if (!token) {
             navigate('/');
             return;
@@ -144,7 +116,6 @@ const Profile = () => {
                 });
             }
 
-            setUser(response.data);
             setOriginalFormData({
                 firstName: response.data.firstName || '',
                 lastName: response.data.lastName || '',
@@ -189,20 +160,8 @@ const Profile = () => {
     };
 
     const handleLogoutConfirm = async () => {
-        const token = localStorage.getItem('token');
-
-        try {
-            await axios.post('http://localhost:8080/api/auth/logout', {}, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-        } catch (error) {
-            console.error('Error during logout:', error);
-        } finally {
-            localStorage.removeItem('token');
-            navigate('/');
-        }
+        await logout();
+        navigate('/');
     };
 
     const handleLogoutCancel = () => {

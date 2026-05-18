@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../../shared/hooks/useAuth';
 
 import './Login.css';
 
@@ -16,6 +17,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
 	const { name, value, type, checked } = e.target;
@@ -50,25 +52,29 @@ const Login = () => {
 	  });
 
 	  if (response.status === 200) {
-		const { token, userId, email, firstname, lastName, role } = response.data;
+		const { token, userId, email, firstName, lastName, role } = response.data;
 
-		localStorage.setItem('token', token);
-		localStorage.setItem('user', JSON.stringify({
-		  userId,
+		// Call login from AuthContext
+		await login(token, {
+		  id: userId,
 		  email,
-		  firstname,
+		  firstName,
 		  lastName,
 		  role
-		}));
+		});
 
 		if(formData.rememberMe) {
 		  localStorage.setItem('rememberMe', 'true');
 		}else{
-		  sessionStorage.setItem('token', token);
 		  localStorage.removeItem('rememberMe');
 		}
 
-		navigate('/dashboard');
+		// Route based on role
+		if (role === 'admin' || role === 'manager') {
+		  navigate('/admin-dashboard');
+		} else {
+		  navigate('/dashboard');
+		}
 	  }
 	} catch (err) {
 	  console.error('Login error:', err);
@@ -159,9 +165,9 @@ const Login = () => {
 			  <label>Remember me</label>
 			</div>
 
-			<a href="#forgot-password" className="forgot-password">
+			<button type="button" className="forgot-password">
 			  Forgot password?
-			</a>
+			</button>
 		  </div>
 
 		  <button type="submit" className="login-button">

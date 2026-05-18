@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../../shared/hooks/useAuth';
 import "./LeaveRequest.css";
 import { formatDateTime, formatDate, getStatusBadgeClass, calcTotalDaysInclusive } from '../../shared/utils/utils';
 
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
 // ── Component ──────────────────────────────────────────────────────────────
 export default function Leave() {
     const navigate = useNavigate();
+    const { token, logout } = useAuth();
     const [activeNav, setActiveNav]       = useState("leave");
     const [currentTime, setCurrentTime]   = useState(new Date());
     const [loading, setLoading]           = useState(true);
@@ -43,7 +45,6 @@ export default function Leave() {
     }, []);
 
     const fetchLeaveRequests = useCallback(async () => {
-        const token = localStorage.getItem('token');
 
         if (!token) {
             navigate('/');
@@ -68,13 +69,12 @@ export default function Leave() {
         } catch (error) {
             console.error('Error fetching leave requests:', error);
             if (error.response?.status === 401) {
-                localStorage.removeItem('token');
                 navigate('/');
             }
         } finally {
             setLoading(false);
         }
-    }, [navigate]);
+    }, [navigate, token]);
 
     useEffect(() => {
         fetchLeaveRequests();
@@ -94,20 +94,8 @@ export default function Leave() {
     };
 
     const handleLogoutConfirm = async () => {
-        const token = localStorage.getItem('token');
-
-        try {
-            await axios.post('http://localhost:8080/api/auth/logout', {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-        } catch (error) {
-            console.error('Error during logout:', error);
-        } finally {
-            localStorage.removeItem('token');
-            navigate('/');
-        }
+        await logout();
+        navigate('/');
     };
 
     const handleLogoutCancel = () => {
@@ -456,4 +444,3 @@ export default function Leave() {
         </div>
     );
 }
-

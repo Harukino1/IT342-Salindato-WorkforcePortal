@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../shared/hooks/useAuth';
 import '../dashboard/Dashboard.css';
 import '../admin_dashboard/AdminDashboard.css';
 import '../../features/profile/Profile.css';
 
 export default function AdminProfile() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   // Static placeholder user (UI-only)
   const [formData, setFormData] = useState({
@@ -15,8 +18,6 @@ export default function AdminProfile() {
     lastName: 'Jane',
     phoneNumber: '+1 (555) 123-4567'
   });
-
-  const avatarPreview = null;
 
   const NAV_ITEMS = [
     { id: 'dashboard', label: 'Dashboard' },
@@ -26,8 +27,21 @@ export default function AdminProfile() {
     { id: 'settings', label: 'Settings' }
   ];
 
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    await logout();
+    navigate('/');
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirm(false);
+  };
+
   const handleNavClick = (id) => {
-    if (id === 'dashboard') navigate('/dashboard');
+    if (id === 'dashboard') navigate('/admin-dashboard');
     else if (id === 'attendance') navigate('/admin-attendance');
     else if (id === 'leave') navigate('/admin-leave');
     else if (id === 'profile') navigate('/admin-profile');
@@ -41,6 +55,20 @@ export default function AdminProfile() {
 
   return (
     <div className="shell profile-page admin-page">
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Confirm Logout</h3>
+            <p>Are you sure you want to logout?</p>
+            <div className="modal-buttons">
+              <button className="btn-cancel" onClick={handleLogoutCancel}>Cancel</button>
+              <button className="btn-confirm" onClick={handleLogoutConfirm}>Logout</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <aside className="sidebar">
         <div className="sidebar__brand"><span className="logo">Workforce Portal</span></div>
         <div className="nav">
@@ -49,7 +77,7 @@ export default function AdminProfile() {
           ))}
         </div>
         <div className="sidebar__spacer" />
-        <button className="sidebar__logout">Logout</button>
+        <button className="sidebar__logout" onClick={handleLogoutClick}>Logout</button>
       </aside>
 
       <main className="main">
@@ -58,9 +86,6 @@ export default function AdminProfile() {
 
           <div className="profile-card">
             <div className="avatar-section">
-              <div className="avatar-container">
-                <div className="avatar-placeholder">👤</div>
-              </div>
               {isEditing && (
                 <div className="avatar-actions">
                   <label className="btn btn-upload">Upload New<input type="file" style={{display:'none'}} /></label>
@@ -105,4 +130,3 @@ export default function AdminProfile() {
     </div>
   );
 }
-

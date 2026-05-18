@@ -53,7 +53,7 @@ const Register = () => {
             lastName: formData.lastName,
             phoneNumber: formData.phoneNumber,
             password: formData.password,
-            role: 'USER'
+            role: 'Member'
         };
 
         try {

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../../shared/hooks/useAuth';
 import "./Attendance.css";
 import {
     formatDateTime,
@@ -104,6 +105,7 @@ const calculateMonthlyOverview = (records) => {
 // ── Component ──────────────────────────────────────────────────────────────
 export default function Attendance() {
     const navigate = useNavigate();
+    const { token, logout } = useAuth();
     const [activeNav, setActiveNav]     = useState("attendance");
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isClockedIn, setIsClockedIn] = useState(false);
@@ -122,8 +124,6 @@ export default function Attendance() {
     const todayKey = new Date().toISOString().slice(0, 10);
 
     const fetchAttendance = useCallback(async () => {
-        const token = localStorage.getItem('token');
-
         if (!token) {
             navigate('/');
             return;
@@ -163,11 +163,10 @@ export default function Attendance() {
             setMonthlyOverview(overview);
         } catch (error) {
             console.error('Error fetching attendance:', error);
-            localStorage.removeItem('token');
             navigate('/');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [navigate, todayKey]);
+    }, [navigate, token, todayKey]);
 
     // Live clock — updates every second for HH/MM/SS working hours display
     useEffect(() => {
@@ -193,20 +192,8 @@ export default function Attendance() {
     };
 
     const handleLogoutConfirm = async () => {
-        const token = localStorage.getItem('token');
-
-        try {
-            await axios.post('http://localhost:8080/api/auth/logout', {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-        } catch (error) {
-            console.error('Error during logout:', error);
-        } finally {
-            localStorage.removeItem('token');
-            navigate('/');
-        }
+        await logout();
+        navigate('/');
     };
 
     const handleLogoutCancel = () => {
@@ -214,7 +201,6 @@ export default function Attendance() {
     };
 
     const handleClockIn = async () => {
-        const token = localStorage.getItem('token');
         if (!token) {
             navigate('/');
             return;
@@ -237,7 +223,6 @@ export default function Attendance() {
     };
 
     const handleClockOut = async () => {
-        const token = localStorage.getItem('token');
         if (!token) {
             navigate('/');
             return;

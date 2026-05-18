@@ -1,16 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../shared/hooks/useAuth';
 import '../dashboard/Dashboard.css';
 import '../admin_dashboard/AdminDashboard.css';
 import './AdminLeave.css';
-
-const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard' },
-  { id: 'attendance', label: 'Attendance' },
-  { id: 'leave', label: 'Leave Request' },
-  { id: 'profile', label: 'Profile' },
-  { id: 'settings', label: 'Settings' },
-];
 
 const sampleRequests = new Array(6).fill(0).map((_, i) => ({
   id: i + 1,
@@ -22,20 +15,57 @@ const sampleRequests = new Array(6).fill(0).map((_, i) => ({
 
 export default function AdminLeave() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [selectedId, setSelectedId] = useState(sampleRequests[0].id);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const selected = sampleRequests.find(r => r.id === selectedId) || sampleRequests[0];
 
+  const NAV_ITEMS = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'attendance', label: 'Attendance' },
+    { id: 'leave', label: 'Leave Request' },
+    { id: 'profile', label: 'Profile' },
+    { id: 'settings', label: 'Settings' },
+  ];
+
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    await logout();
+    navigate('/');
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirm(false);
+  };
+
   const handleNavClick = (id) => {
-    if (id === 'dashboard') navigate('/dashboard');
+    if (id === 'dashboard') navigate('/admin-dashboard');
     else if (id === 'attendance') navigate('/admin-attendance');
     else if (id === 'leave') navigate('/admin-leave');
-    else if (id === 'profile') navigate('/profile');
-    else if (id === 'settings') navigate('/settings');
+    else if (id === 'profile') navigate('/admin-profile');
+    else if (id === 'settings') navigate('/admin-settings');
   };
 
   return (
     <div className="dashboard admin-page">
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Confirm Logout</h3>
+            <p>Are you sure you want to logout?</p>
+            <div className="modal-buttons">
+              <button className="btn-cancel" onClick={handleLogoutCancel}>Cancel</button>
+              <button className="btn-confirm" onClick={handleLogoutConfirm}>Logout</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <aside className="sidebar">
         <h2 className="logo">Workforce Portal</h2>
 
@@ -47,7 +77,7 @@ export default function AdminLeave() {
           ))}
         </nav>
 
-        <button className="logout">Logout</button>
+        <button className="logout" onClick={handleLogoutClick}>Logout</button>
       </aside>
 
       <main className="main">

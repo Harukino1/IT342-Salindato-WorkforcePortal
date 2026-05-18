@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../../shared/hooks/useAuth';
 import './Setting.css';
 import { formatDateTime } from '../../shared/utils/utils';
 
@@ -16,6 +17,7 @@ const NAV_ITEMS = [
 
 export default function Settings() {
 	const navigate = useNavigate();
+	const { token, logout } = useAuth();
 	const [activeNav, setActiveNav] = useState('settings');
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const [loading, setLoading] = useState(true);
@@ -46,17 +48,8 @@ export default function Settings() {
 	const handleLogoutCancel = () => setShowLogoutConfirm(false);
 
 	const handleLogoutConfirm = async () => {
-		const token = localStorage.getItem('token');
-		try {
-			await axios.post('http://localhost:8080/api/auth/logout', {}, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-		} catch (err) {
-			console.error('Logout error', err);
-		} finally {
-			localStorage.removeItem('token');
-			navigate('/');
-		}
+		await logout();
+		navigate('/');
 	};
 
 	const handleSave = useCallback(async () => {
@@ -70,7 +63,6 @@ export default function Settings() {
 			setError('New password must be at least 8 characters long.');
 			return;
 		}
-		const token = localStorage.getItem('token');
 		if (!token) {
 			navigate('/');
 			return;
@@ -92,13 +84,12 @@ export default function Settings() {
 			console.error('Error changing password', err);
 			setError(err.response?.data?.message || 'Failed to update password');
 			if (err.response?.status === 401) {
-				localStorage.removeItem('token');
 				navigate('/');
 			}
 		} finally {
 			setIsSaving(false);
 		}
-	}, [oldPassword, newPassword, navigate]);
+	}, [oldPassword, newPassword, navigate, token]);
 
 	if (loading) {
 		return (

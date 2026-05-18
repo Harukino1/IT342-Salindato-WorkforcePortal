@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../shared/hooks/useAuth';
 import '../dashboard/Dashboard.css';
 import '../admin_dashboard/AdminDashboard.css';
 import '../../features/settings/Setting.css';
 
 export default function AdminSettings() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const NAV_ITEMS = [
     { id: 'dashboard', label: 'Dashboard' },
@@ -18,8 +21,21 @@ export default function AdminSettings() {
     { id: 'settings', label: 'Settings' },
   ];
 
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    await logout();
+    navigate('/');
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirm(false);
+  };
+
   const handleNavClick = (id) => {
-    if (id === 'dashboard') navigate('/dashboard');
+    if (id === 'dashboard') navigate('/admin-dashboard');
     else if (id === 'attendance') navigate('/admin-attendance');
     else if (id === 'leave') navigate('/admin-leave');
     else if (id === 'profile') navigate('/admin-profile');
@@ -33,6 +49,20 @@ export default function AdminSettings() {
 
   return (
     <div className="shell admin-page">
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Confirm Logout</h3>
+            <p>Are you sure you want to logout?</p>
+            <div className="modal-buttons">
+              <button className="btn-cancel" onClick={handleLogoutCancel}>Cancel</button>
+              <button className="btn-confirm" onClick={handleLogoutConfirm}>Logout</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <aside className="sidebar">
         <div className="sidebar__brand"><span className="logo">WorkForce Portal</span></div>
         <div className="nav">
@@ -41,7 +71,7 @@ export default function AdminSettings() {
           ))}
         </div>
         <div className="sidebar__spacer" />
-        <button className="sidebar__logout">Logout</button>
+        <button className="sidebar__logout" onClick={handleLogoutClick}>Logout</button>
       </aside>
 
       <main className="main">

@@ -6,6 +6,16 @@ import { useAuth } from '../../shared/hooks/useAuth';
 import './Login.css';
 
 const Login = () => {
+  const normalizeRole = (role) => {
+	if (!role) return null;
+
+	const value = String(role).trim().toLowerCase();
+	if (value === 'admin' || value === 'manager') return value;
+	if (value === 'member' || value === 'user') return 'member';
+
+	return value;
+  };
+
   const [formData, setFormData] = useState({
 	email: '',
 	password: '',
@@ -53,6 +63,7 @@ const Login = () => {
 
 	  if (response.status === 200) {
 		const { token, userId, email, firstName, lastName, role } = response.data;
+		const normalizedRole = normalizeRole(role);
 
 		// Call login from AuthContext
 		await login(token, {
@@ -60,7 +71,7 @@ const Login = () => {
 		  email,
 		  firstName,
 		  lastName,
-		  role
+		  role: normalizedRole
 		});
 
 		if(formData.rememberMe) {
@@ -70,10 +81,10 @@ const Login = () => {
 		}
 
 		// Route based on role
-		if (role === 'admin' || role === 'manager') {
-		  navigate('/admin-dashboard');
+		if (normalizedRole === 'admin' || normalizedRole === 'manager') {
+		  navigate('/admin-dashboard', { replace: true });
 		} else {
-		  navigate('/dashboard');
+		  navigate('/dashboard', { replace: true });
 		}
 	  }
 	} catch (err) {

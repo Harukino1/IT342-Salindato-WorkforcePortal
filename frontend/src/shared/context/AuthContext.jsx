@@ -2,6 +2,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { AuthContext } from './AuthContextObject';
 
+const normalizeRole = (role) => {
+  if (!role) return null;
+
+  const value = String(role).trim().toLowerCase();
+  if (value === 'admin' || value === 'manager') return value;
+  if (value === 'member' || value === 'user') return 'member';
+
+  return value;
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,7 +29,10 @@ export const AuthProvider = ({ children }) => {
               Authorization: `Bearer ${storedToken}`
             }
           });
-          setUser(response.data);
+          setUser({
+            ...response.data,
+            role: normalizeRole(response.data?.role)
+          });
         } catch (error) {
           console.error('Error fetching user data:', error);
           localStorage.removeItem('token');
@@ -35,7 +48,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = useCallback(async (nextToken, userData) => {
     setToken(nextToken);
-    setUser(userData);
+    setUser({
+      ...userData,
+      role: normalizeRole(userData?.role)
+    });
     localStorage.setItem('token', nextToken);
   }, []);
 
@@ -58,8 +74,9 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const isAuthenticated = !!token && !!user;
-  const isAdmin = user?.role === 'admin' || user?.role === 'manager';
-  const isMember = user?.role === 'Member';
+  const normalizedRole = normalizeRole(user?.role);
+  const isAdmin = normalizedRole === 'admin' || normalizedRole === 'manager';
+  const isMember = normalizedRole === 'member';
 
   return (
     <AuthContext.Provider value={{ user, token, loading, isAuthenticated, isAdmin, isMember, login, logout }}>

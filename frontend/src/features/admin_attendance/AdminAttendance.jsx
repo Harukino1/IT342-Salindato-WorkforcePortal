@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../shared/hooks/useAuth';
+import { formatDateTime } from '../../shared/utils/utils';
 import '../dashboard/Dashboard.css';
 import '../admin_dashboard/AdminDashboard.css';
 import './AdminAttendance.css';
 
 const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard' },
-  { id: 'attendance', label: 'Attendance' },
-  { id: 'leave', label: 'Leave Request' },
+  { id: 'dashboard', label: 'Team Overview' },
+  { id: 'attendance', label: 'Attendance Log' },
+  { id: 'leave', label: 'Leave Approvals' },
   { id: 'profile', label: 'Profile' },
   { id: 'settings', label: 'Settings' },
 ];
@@ -17,6 +18,12 @@ const AdminAttendance = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1_000);
+    return () => clearInterval(timer);
+  }, []);
 
   const stats = [
     { title: 'Present', value: 93 },
@@ -80,11 +87,11 @@ const AdminAttendance = () => {
       </aside>
 
       <main className="main">
-        <section className="welcome-container admin-profile-card">
-          <div className="avatar">👤</div>
-          <div className="welcome-content">
-            <h1>Attendance</h1>
-            <div className="admin-badge">ADMIN</div>
+        <section className="admin-page-header">
+          <h1 className="admin-page-title">Attendance Log</h1>
+          <div className="admin-header-meta">
+            <span className="admin-header-tag">ADMIN</span>
+            <span className="admin-page-datetime">{formatDateTime(currentTime)}</span>
           </div>
         </section>
 

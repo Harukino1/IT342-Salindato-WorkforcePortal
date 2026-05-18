@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../shared/hooks/useAuth';
+import { formatDateTime } from '../../shared/utils/utils';
 import '../dashboard/Dashboard.css';
 import '../admin_dashboard/AdminDashboard.css';
 import './AdminLeave.css';
@@ -18,13 +19,19 @@ export default function AdminLeave() {
   const { logout } = useAuth();
   const [selectedId, setSelectedId] = useState(sampleRequests[0].id);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1_000);
+    return () => clearInterval(timer);
+  }, []);
 
   const selected = sampleRequests.find(r => r.id === selectedId) || sampleRequests[0];
 
   const NAV_ITEMS = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'attendance', label: 'Attendance' },
-    { id: 'leave', label: 'Leave Request' },
+    { id: 'dashboard', label: 'Team Overview' },
+    { id: 'attendance', label: 'Attendance Log' },
+    { id: 'leave', label: 'Leave Approvals' },
     { id: 'profile', label: 'Profile' },
     { id: 'settings', label: 'Settings' },
   ];
@@ -81,11 +88,11 @@ export default function AdminLeave() {
       </aside>
 
       <main className="main">
-        <section className="welcome-container admin-profile-card">
-          <div className="avatar">👤</div>
-          <div className="welcome-content">
-            <h1>Leave Requests</h1>
-            <div className="admin-badge">ADMIN</div>
+        <section className="admin-page-header">
+          <h1 className="admin-page-title">Leave Approvals</h1>
+          <div className="admin-header-meta">
+            <span className="admin-header-tag">ADMIN</span>
+            <span className="admin-page-datetime">{formatDateTime(currentTime)}</span>
           </div>
         </section>
 

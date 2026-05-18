@@ -8,8 +8,8 @@ import { formatDateTime, formatDate, getStatusBadgeClass, calcTotalDaysInclusive
 // ── Static data ────────────────────────────────────────────────────────────
 const NAV_ITEMS = [
     { id: "dashboard",  label: "Dashboard" },
-    { id: "attendance", label: "Attendance" },
-    { id: "leave",      label: "Leave" },
+    { id: "attendance", label: "Time Clock" },
+    { id: "leave",      label: "Leave Application" },
     { id: "profile",    label: "Profile" },
     { id: "settings",   label: "Settings" },
 ];
@@ -309,7 +309,7 @@ export default function Leave() {
                 <div className="content">
                     {/* Page Header */}
                     <div className="page-header">
-                        <h1 className="page-title">Leaves</h1>
+                        <h1 className="page-title">Leave Application</h1>
                         <span className="page-datetime">{formatDateTime(currentTime)}</span>
                     </div>
 

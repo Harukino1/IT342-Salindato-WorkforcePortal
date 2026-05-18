@@ -24,8 +24,8 @@ import {
 // ── Static data ────────────────────────────────────────────────────────────
 const NAV_ITEMS = [
     { id: "dashboard",  label: "Dashboard" },
-    { id: "attendance", label: "Attendance" },
-    { id: "leave",      label: "Leave" },
+    { id: "attendance", label: "Time Clock" },
+    { id: "leave",      label: "Leave Application" },
     { id: "profile",    label: "Profile" },
     { id: "settings",   label: "Settings" },
 ];
@@ -351,13 +351,13 @@ export default function Attendance() {
                     <div className="topbar__dot topbar__dot--red" />
                     <div className="topbar__dot topbar__dot--amber" />
                     <div className="topbar__dot topbar__dot--green" />
-                    <span className="topbar__title">Attendance</span>
+                    <span className="topbar__title">Time Clock</span>
                 </div>
 
                 <div className="content">
                     {/* Page Header */}
                     <div className="page-header">
-                        <h1 className="page-title">Attendance</h1>
+                        <h1 className="page-title">Time Clock</h1>
                         <span className="page-datetime">{formatDateTime(currentTime)}</span>
                     </div>
 

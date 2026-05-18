@@ -80,8 +80,8 @@ const Dashboard = () => {
 
 const NAV_ITEMS = [
     { id: 'dashboard', label: 'Dashboard' },
-    { id: 'attendance', label: 'Attendance' },
-    { id: 'leave', label: 'Leave' },
+    { id: 'attendance', label: 'Time Clock' },
+    { id: 'leave', label: 'Leave Application' },
     { id: 'profile', label: 'Profile' },
     { id: 'settings', label: 'Settings' },
 ];

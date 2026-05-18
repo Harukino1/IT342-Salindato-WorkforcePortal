@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../shared/hooks/useAuth';
 import { formatDateTime } from '../../shared/utils/utils';
 import '../dashboard/Dashboard.css'; // reuse base dashboard styles
@@ -23,6 +23,26 @@ const AdminDashboard = () => {
     { id: 'profile', label: 'Profile' },
     { id: 'settings', label: 'Settings' },
   ];
+
+  const location = useLocation();
+
+  const getActiveId = () => {
+    const p = location.pathname;
+    if (p.startsWith('/admin-attendance')) return 'attendance';
+    if (p.startsWith('/admin-leave')) return 'leave';
+    if (p.startsWith('/admin-profile')) return 'profile';
+    if (p.startsWith('/admin-settings')) return 'settings';
+    return 'dashboard';
+  };
+
+  const [enter, setEnter] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setEnter(true), 10);
+    return () => {
+      clearTimeout(t);
+      setEnter(false);
+    };
+  }, [location.pathname]);
 
   const handleNavClick = (id) => {
     if (id === 'dashboard') navigate('/admin-dashboard', { replace: true });
@@ -62,13 +82,15 @@ const AdminDashboard = () => {
       )}
 
       <aside className="sidebar">
-        <h2 className="logo">Workforce Portal</h2>
+        <div className="sidebar__brand">
+          <span className="logo">WorkForce<br />Portal</span>
+        </div>
 
         <nav className="nav">
           {NAV_ITEMS.map(({ id, label }) => (
             <button
               key={id}
-              className={`nav-item ${id === 'dashboard' ? 'active' : ''}`}
+              className={`nav-item ${id === getActiveId() ? 'nav-item--active' : ''}`}
               onClick={() => handleNavClick(id)}
             >
               {label}
@@ -76,10 +98,11 @@ const AdminDashboard = () => {
           ))}
         </nav>
 
-        <button className="logout" onClick={handleLogoutClick}>Logout</button>
+        <div className="sidebar__spacer" />
+        <button className="sidebar__logout" onClick={handleLogoutClick}>Logout</button>
       </aside>
 
-      <main className="main">
+      <main className={`main ${enter ? 'enter' : ''}`}>
         <section className="admin-page-header">
           <h1 className="admin-page-title">Team Overview</h1>
           <div className="admin-header-meta">

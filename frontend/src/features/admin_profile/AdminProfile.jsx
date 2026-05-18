@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../shared/hooks/useAuth';
 import '../dashboard/Dashboard.css';
 import '../admin_dashboard/AdminDashboard.css';
@@ -20,12 +20,29 @@ export default function AdminProfile() {
   });
 
   const NAV_ITEMS = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'attendance', label: 'Attendance' },
-    { id: 'leave', label: 'Leave' },
+    { id: 'dashboard', label: 'Team Overview' },
+    { id: 'attendance', label: 'Attendance Log' },
+    { id: 'leave', label: 'Leave Approvals' },
     { id: 'profile', label: 'Profile' },
     { id: 'settings', label: 'Settings' }
   ];
+
+  const location = useLocation();
+
+  const getActiveId = () => {
+    const p = location.pathname;
+    if (p.startsWith('/admin-attendance')) return 'attendance';
+    if (p.startsWith('/admin-leave')) return 'leave';
+    if (p.startsWith('/admin-profile')) return 'profile';
+    if (p.startsWith('/admin-settings')) return 'settings';
+    return 'dashboard';
+  };
+
+  const [enter, setEnter] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setEnter(true), 10);
+    return () => { clearTimeout(t); setEnter(false); };
+  }, [location.pathname]);
 
   const handleLogoutClick = () => {
     setShowLogoutConfirm(true);
@@ -70,17 +87,19 @@ export default function AdminProfile() {
       )}
 
       <aside className="sidebar">
-        <div className="sidebar__brand"><span className="logo">Workforce Portal</span></div>
-        <div className="nav">
-          {NAV_ITEMS.map(({ id, label }) => (
-            <div key={id} className={`nav-item ${id === 'profile' ? 'nav-item--active' : ''}`} onClick={() => handleNavClick(id)}>{label}</div>
-          ))}
+        <div className="sidebar__brand">
+          <span className="logo">WorkForce<br />Portal</span>
         </div>
+        <nav className="nav">
+          {NAV_ITEMS.map(({ id, label }) => (
+            <button key={id} className={`nav-item ${id === getActiveId() ? 'nav-item--active' : ''}`} onClick={() => handleNavClick(id)}>{label}</button>
+          ))}
+        </nav>
         <div className="sidebar__spacer" />
         <button className="sidebar__logout" onClick={handleLogoutClick}>Logout</button>
       </aside>
 
-      <main className="main">
+      <main className={`main ${enter ? 'enter' : ''}`}>
         <div className="content">
           <div className="page-header"><h1 className="page-title">Profile</h1></div>
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../shared/hooks/useAuth';
 import './Dashboard.css';
@@ -12,10 +12,29 @@ const Dashboard = () => {
     const [isClockedIn, setIsClockedIn] = useState(false);
     const [isClockingIn, setIsClockingIn] = useState(false);
 
+    const location = useLocation();
+    // derive active tab from current pathname
+    const getActiveId = () => {
+        const p = location.pathname;
+        if (p.startsWith('/attendance')) return 'attendance';
+        if (p.startsWith('/leave')) return 'leave';
+        if (p.startsWith('/profile')) return 'profile';
+        if (p.startsWith('/settings')) return 'settings';
+        return 'dashboard';
+    };
+
+    const [enter, setEnter] = useState(false);
+    useEffect(() => {
+        const t = setTimeout(() => setEnter(true), 10);
+        return () => clearTimeout(t);
+    }, [location.pathname]);
+
     useEffect(() => {
         const fetchAttendanceData = async () => {
             if (!token) {
+                // no token -> go back to login and stop the loading state so the page doesn't hang
                 navigate('/');
+                setLoading(false);
                 return;
             }
 
@@ -74,17 +93,16 @@ const Dashboard = () => {
         }
     };
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+
 
 const NAV_ITEMS = [
     { id: 'dashboard', label: 'Dashboard' },
-    { id: 'attendance', label: 'Time Clock' },
+    { id: 'attendance', label: 'Log Hours' },
     { id: 'leave', label: 'Leave Application' },
     { id: 'profile', label: 'Profile' },
     { id: 'settings', label: 'Settings' },
 ];
+
 
     const handleNavClick = (id) => {
         if (id === 'dashboard') navigate('/dashboard', { replace: true });
@@ -112,13 +130,15 @@ const NAV_ITEMS = [
 
             {/* Sidebar */}
             <aside className="sidebar">
-                <h2 className="logo">WorkForce Portal</h2>
+                <div className="sidebar__brand">
+                    <span className="logo">WorkForce<br />Portal</span>
+                </div>
 
                 <nav className="nav">
                     {NAV_ITEMS.map(({ id, label }) => (
                         <button
                             key={id}
-                            className={`nav-item ${id === 'dashboard' ? 'active' : ''}`}
+                            className={`nav-item ${id === getActiveId() ? 'nav-item--active' : ''}`}
                             onClick={() => handleNavClick(id)}
                         >
                             {label}
@@ -126,11 +146,11 @@ const NAV_ITEMS = [
                     ))}
                 </nav>
 
-                <button className="logout" onClick={handleLogoutClick}>Logout</button>
+                <button className="sidebar__logout" onClick={handleLogoutClick}>Logout</button>
             </aside>
 
             {/* Main */}
-            <main className="main">
+            <main className={`main ${enter ? 'enter' : ''}`}>
                 {/* Welcome Header Container */}
                 <section className="welcome-container">
                     <div className="avatar">👤</div>

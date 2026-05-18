@@ -24,7 +24,7 @@ import {
 // ── Static data ────────────────────────────────────────────────────────────
 const NAV_ITEMS = [
     { id: "dashboard",  label: "Dashboard" },
-    { id: "attendance", label: "Time Clock" },
+    { id: "attendance", label: "Log Hours" },
     { id: "leave",      label: "Leave Application" },
     { id: "profile",    label: "Profile" },
     { id: "settings",   label: "Settings" },
@@ -323,19 +323,17 @@ export default function Attendance() {
                     <span className="logo">WorkForce<br />Portal</span>
                 </div>
 
-                <div className="nav">
+                <nav className="nav">
                     {NAV_ITEMS.map(({ id, label }) => (
-                        <div
+                        <button
                             key={id}
-                            className={`nav-item ${activeNav === id ? "nav-item--active" : ""}`}
+                            className={`nav-item ${activeNav === id ? 'nav-item--active' : ''}`}
                             onClick={() => handleNavClick(id)}
-                            role="button"
-                            aria-current={activeNav === id ? "page" : undefined}
                         >
                             {label}
-                        </div>
+                        </button>
                     ))}
-                </div>
+                </nav>
 
                 <div className="sidebar__spacer" />
 
@@ -351,13 +349,13 @@ export default function Attendance() {
                     <div className="topbar__dot topbar__dot--red" />
                     <div className="topbar__dot topbar__dot--amber" />
                     <div className="topbar__dot topbar__dot--green" />
-                    <span className="topbar__title">Time Clock</span>
+                    <span className="topbar__title">Log Hours</span>
                 </div>
 
                 <div className="content">
                     {/* Page Header */}
                     <div className="page-header">
-                        <h1 className="page-title">Time Clock</h1>
+                        <h1 className="page-title">Log Hours</h1>
                         <span className="page-datetime">{formatDateTime(currentTime)}</span>
                     </div>
 

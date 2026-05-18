@@ -27,6 +27,11 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
 }
 
+.sidebar__brand {
+  padding: 0;
+  margin-bottom: 0;
+}
+
 .logo {
   width: 100%;
   font-size: 32px;
@@ -39,6 +44,8 @@
   margin-bottom: 30px; 
   display: block;
   text-align: center;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
 }
 
 .nav {
@@ -68,12 +75,14 @@
   color: #fff;
 }
 
+.nav-item--active,
 .nav-item.active {
   background: linear-gradient(135deg, #6366f1, #4f46e5);
   color: #fff;
   box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
 }
 
+.sidebar__logout,
 .logout {
   background: #ef4444;
   border: none;
@@ -87,6 +96,7 @@
   margin-top: auto; 
 }
 
+.sidebar__logout:hover,
 .logout:hover {
   box-shadow: 0 10px 30px rgba(239, 68, 68, 0.5);
 }

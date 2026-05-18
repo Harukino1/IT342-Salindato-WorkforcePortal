@@ -189,8 +189,8 @@ const Profile = () => {
 
     const NAV_ITEMS = [
         { id: 'dashboard', label: 'Dashboard' },
-        { id: 'attendance', label: 'Attendance' },
-        { id: 'leave', label: 'Leave' },
+        { id: 'attendance', label: 'Log Hours' },
+        { id: 'leave', label: 'Leave Application' },
         { id: 'profile', label: 'Profile' },
         { id: 'settings', label: 'Settings' }
     ];
@@ -214,22 +214,20 @@ const Profile = () => {
             {/* Sidebar */}
             <aside className="sidebar">
                 <div className="sidebar__brand">
-                    <span className="logo">WorkForce Portal</span>
+                    <span className="logo">WorkForce<br />Portal</span>
                 </div>
 
-                <div className="nav">
+                <nav className="nav">
                     {NAV_ITEMS.map(({ id, label }) => (
-                        <div
+                        <button
                             key={id}
                             className={`nav-item ${activeNav === id ? 'nav-item--active' : ''}`}
                             onClick={() => handleNavClick(id)}
-                            role="button"
-                            aria-current={activeNav === id ? 'page' : undefined}
                         >
                             {label}
-                        </div>
+                        </button>
                     ))}
-                </div>
+                </nav>
 
                 <div className="sidebar__spacer" />
 

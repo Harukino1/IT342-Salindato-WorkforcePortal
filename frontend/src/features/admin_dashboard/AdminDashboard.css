@@ -6,6 +6,16 @@
   margin-bottom: 12px;
 }
 
+/* Fade-in animation for main content when switching tabs */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.admin-page .main.enter {
+  animation: fadeIn 0.35s ease both;
+}
+
 .admin-page .admin-page-title {
   margin: 0;
   font-size: 28px;

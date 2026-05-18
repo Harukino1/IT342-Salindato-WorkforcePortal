@@ -8,7 +8,7 @@ import { formatDateTime, formatDate, getStatusBadgeClass, calcTotalDaysInclusive
 // ── Static data ────────────────────────────────────────────────────────────
 const NAV_ITEMS = [
     { id: "dashboard",  label: "Dashboard" },
-    { id: "attendance", label: "Time Clock" },
+    { id: "attendance", label: "Log Hours" },
     { id: "leave",      label: "Leave Application" },
     { id: "profile",    label: "Profile" },
     { id: "settings",   label: "Settings" },
@@ -180,14 +180,7 @@ export default function Leave() {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="page-loading" role="status" aria-live="polite" aria-busy="true">
-                <div className="page-loading__spinner" />
-                <span>Loading leave requests...</span>
-            </div>
-        );
-    }
+    // Do not block rendering with a full-page loader. Show a non-blocking banner inside the main area instead.
 
     return (
         <div className="shell">
@@ -283,19 +276,17 @@ export default function Leave() {
                     <span className="logo">WorkForce<br />Portal</span>
                 </div>
 
-                <div className="nav">
+                <nav className="nav">
                     {NAV_ITEMS.map(({ id, label }) => (
-                        <div
+                        <button
                             key={id}
-                            className={`nav-item ${activeNav === id ? "nav-item--active" : ""}`}
+                            className={`nav-item ${activeNav === id ? 'nav-item--active' : ''}`}
                             onClick={() => handleNavClick(id)}
-                            role="button"
-                            aria-current={activeNav === id ? "page" : undefined}
                         >
                             {label}
-                        </div>
+                        </button>
                     ))}
-                </div>
+                </nav>
 
                 <div className="sidebar__spacer" />
 
@@ -306,6 +297,13 @@ export default function Leave() {
 
             {/* ── Main ── */}
             <main className="main">
+                {/* Non-blocking loading banner */}
+                {loading && (
+                    <div className="page-loading" role="status" aria-live="polite" aria-busy="true" style={{ marginBottom: 12 }}>
+                        <div className="page-loading__spinner" />
+                        <span>Loading leave requests...</span>
+                    </div>
+                )}
                 <div className="content">
                     {/* Page Header */}
                     <div className="page-header">
